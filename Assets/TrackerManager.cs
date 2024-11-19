@@ -4,23 +4,8 @@ using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TrackerManager : MonoBehaviour
+public class TrackerManager : SingletonMono<TrackerManager>
 {
-	public static TrackerManager m_instance;
-	public static TrackerManager Instance
-	{
-		get
-		{
-#if UNITY_EDITOR
-			if (!Application.isPlaying && m_instance == null)
-				m_instance = FindObjectOfType<TrackerManager>();
-#endif
-			if (m_instance == null)
-				Debug.LogError("TrackerManager not available in the current scene.");
-			return m_instance;
-		}
-	}
-
 	public readonly List<TrackerPresenter> trackers = new List<TrackerPresenter>();
 
 	public SDispatcher<int> ValidTrackerCount = new SDispatcher<int>();
@@ -29,9 +14,8 @@ public class TrackerManager : MonoBehaviour
 	public List<TrackerAction> ActionPrefabs = new List<TrackerAction>();
 	public TrackerButton ButtonPrefab;
 
-	private void Awake()
+	protected override void Awake()
 	{
-		m_instance = this;
 		LobbyNetworkManager.OnTrackersChange += OnNetworkTrackerChange;
 		LobbyNetworkManager.OnActionsChange += OnNetworkActionChange;
 	}
