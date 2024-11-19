@@ -5,9 +5,9 @@ using UnityEngine;
 using UnityEngine.Events;
 
 [Serializable]
-public class SDispatcher<T> :
+public class SDispatcher<T>
 #if UNITY_EDITOR
-	ISerializationCallbackReceiver
+	: ISerializationCallbackReceiver
 #endif
 {
 #if UNITY_EDITOR

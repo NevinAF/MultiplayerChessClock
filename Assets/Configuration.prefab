@@ -48,7 +48,7 @@ MonoBehaviour:
   sceneId: 0
   _assetId: 2570751671
   serverOnly: 0
-  visibility: 0
+  visibility: 2
   hasSpawned: 0
 --- !u!114 &9196596990978067152
 MonoBehaviour:
@@ -65,5 +65,21 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  gridLayoutGroup: {fileID: 0}
-  prefab: {fileID: 4479817966293772465, guid: 8b59c534f60433244a34862d834450bd, type: 3}
+  LobbyName:
+    hideValue: 0
+    m_value: <LOBBY NAME>
+    OnChange:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 0}
+          m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
+          m_MethodName: set_text
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
