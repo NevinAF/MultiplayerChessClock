@@ -4,8 +4,6 @@ using UnityEngine.UI;
 
 public class OnOffTimer_ActionInput : TrackerActionDataInput
 {
-	public TrackerDispatchers CopyFrom;
-
 	private int saved_copy_target = 0;
 
 	public SDispatcher<bool> IsToggle;
@@ -13,9 +11,7 @@ public class OnOffTimer_ActionInput : TrackerActionDataInput
 	public SDispatcher<bool> OnOrOff_IsOn;
 	public SDispatcher<bool> IsCopyFrom;
 	public SDispatcher<bool> CopyFrom_IsInvert;
-
-	public TrackerDispatchers dispatchers;
-
+	public TrackerDispatchers CopyFrom_Dispatcher;
 
 	public override void UpdatePreview()
 	{
@@ -33,13 +29,13 @@ public class OnOffTimer_ActionInput : TrackerActionDataInput
 			saved_copy_target = CopyFrom_IsInvert.Value ? (-toggleTarget - 1) : toggleTarget;
 		}
 
-		dispatchers.PipeFrom((byte)saved_copy_target);
+		CopyFrom_Dispatcher.PipeFrom((byte)saved_copy_target);
 	}
 
 	protected override void OnDisable()
 	{
 		base.OnDisable();
-		dispatchers.ClearData();
+		CopyFrom_Dispatcher.ClearData();
 	}
 
 	public void SetIsOn(bool isOn)
@@ -78,7 +74,7 @@ public class OnOffTimer_ActionInput : TrackerActionDataInput
 		Title = "Select Copy From Tracker"
 	};
 
-	public override ushort DefaultData => ushort.MaxValue - 2; // Toggle
+	public override ushort DefaultData => (ushort)(short.MaxValue - 2); // Toggle
 
 	public void OpenCopyFromPopup()
 	{

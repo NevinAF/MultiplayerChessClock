@@ -73,6 +73,8 @@ public class OnOffTimer_Action : TrackerAction
 		else // Use value of another tracker
 			wantsActive = LobbyNetworkManager.GetTrackerData(toggleTarget).TimerActive;
 
+			UnityEngine.Debug.Log("Server_PreformActionPrefab: " + wantsActive);
+
 		targetNetworkData.TimerActive = wantsActive;
 	}
 }

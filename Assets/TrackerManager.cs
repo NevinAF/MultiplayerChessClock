@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TrackerManager : MonoBehaviour
 {
@@ -61,9 +62,12 @@ public class TrackerManager : MonoBehaviour
 
 		while (tracker.buttons.Count <= buttonIndex)
 		{
+			byte index = (byte)tracker.buttons.Count;
 			TrackerButton button = Instantiate(Instance.ButtonPrefab, tracker.DefaultButtonGroup);
-			button.OnClick(() => LobbyNetworkManager.Cmd_ButtonPressed(trackerId, buttonIndex));
+			button.OnClick(() => LobbyNetworkManager.Cmd_ButtonPressed(trackerId, index));
 			tracker.buttons.Add(button);
+
+			LayoutRebuilder.ForceRebuildLayoutImmediate(tracker.DefaultButtonGroup);
 		}
 		return tracker.buttons[buttonIndex];
 	}

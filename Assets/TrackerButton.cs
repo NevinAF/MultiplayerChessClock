@@ -57,8 +57,8 @@ public class TrackerButton : MonoBehaviour
 		for (int i = 0; i < actions.Values.Count; i++)
 		{
 			TrackerAction action = actions.Values[i];
-			active |= action.Dispatcher.Invalid;
-			interactable &= action.Dispatcher.Disabled;
+			active |= !action.Dispatcher.Invalid;
+			interactable &= !action.Dispatcher.Disabled;
 		}
 
 		ActionsParent.gameObject.SetActive(active);

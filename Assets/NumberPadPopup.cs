@@ -1,26 +1,39 @@
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using UnityEngine.Events;
 
 public class NumberPadPopup : InputPopup<NumberPadPopup, int, NumberPadPopup.InputOptions, NumberPopupQuickItem>
 {
+	public enum InputType
+	{
+		Duration,
+	}
+
 	public delegate string FormatCallback(int unit, int value);
 
 	public class InputOptions : InputPopupShowOptions<int>
 	{
 		public string InitialText;
-		public string UnitsText;
-		public int NumberOfFormats;
-		public FormatCallback Formatter;
+		public InputType Type;
+		public int MaxValue;
 	}
 
 	protected override void OnShow(InputOptions options)
 	{
-		UnitsText.Value = options.UnitsText;
 		RawText.Value = options.InitialText ?? "—";
 		UnitType.Value = 0;
-		Formats = options.NumberOfFormats;
-		Formatter = options.Formatter;
+
+		Type = options.Type;
+		MaxValue = options.MaxValue;
+		switch (options.Type)
+		{
+			case InputType.Duration:
+				UnitsText.Value = "s/m/h";
+				Formats = 3;
+				Formatter = (int unit, int value) => Formatting.Time(value * System.Math.Pow(60, unit));
+				break;
+		}
 	}
 
 	public SDispatcher<string> RawText;
@@ -29,6 +42,8 @@ public class NumberPadPopup : InputPopup<NumberPadPopup, int, NumberPadPopup.Inp
 	public SDispatcher<int> UnitType;
 	public SDispatcher<bool> IsntEmpty;
 
+	public InputType Type { get; private set; }
+	public int MaxValue { get; private set; }
 	public int Formats { get; private set; }
 	public FormatCallback Formatter { get; private set; }
 
@@ -86,6 +101,20 @@ public class NumberPadPopup : InputPopup<NumberPadPopup, int, NumberPadPopup.Inp
 		}
 		else
 		{
+			switch (Type)
+			{
+				case InputType.Duration:
+					value *= (int)System.Math.Pow(60, UnitType.Value);
+					break;
+			}
+
+			if (value > MaxValue)
+			{
+				RawText.Value = ((int)(MaxValue / System.Math.Pow(60, UnitType.Value))).ToString();
+				UpdatePreview();
+				return;
+			}
+
 			Result.Value = value;
 			FormattedPreview.Value = Formatter(UnitType, value);
 		}
@@ -94,8 +123,11 @@ public class NumberPadPopup : InputPopup<NumberPadPopup, int, NumberPadPopup.Inp
 
 		base.UpdatePreview();
 
-		for (int i = 0; i < QuickFillList.Count; i++)
-			SetQuickFillEntry(QuickFillList[i], QuickFillEntries[i].Value);
+		if (QuickFillList != null)
+		{
+			for (int i = 0; i < QuickFillList.Count; i++)
+				SetQuickFillEntry(QuickFillList[i], QuickFillEntries[i].Value);
+		}
 	}
 
 	protected override int ValueSortScore(int value)
@@ -105,7 +137,7 @@ public class NumberPadPopup : InputPopup<NumberPadPopup, int, NumberPadPopup.Inp
 
 	protected override void SetQuickFillEntry(NumberPopupQuickItem item, int value)
 	{
-		item.Preview.text = Formatter(UnitType, value);
+		item.Preview.text = Formatter(0, value);
 		item.Value.text = value.ToString();
 	}
 
@@ -120,6 +152,12 @@ public class NumberPadPopup : InputPopup<NumberPadPopup, int, NumberPadPopup.Inp
 
 	protected override void QuickFillClicked(int value)
 	{
+		switch (Type)
+		{
+			case InputType.Duration:
+				value = (int)(value / System.Math.Pow(60, UnitType.Value));
+				break;
+		}
 		RawText.Value = value.ToString();
 	}
 }

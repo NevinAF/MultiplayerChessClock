@@ -39,14 +39,14 @@ public class TrackerPresenter : MonoBehaviour
 
 
 	public List<TrackerButton> buttons = new List<TrackerButton>();
-	public Transform DefaultButtonGroup;
+	public RectTransform DefaultButtonGroup;
 
 	private void Start()
 	{
 		for (int i = 0; i < buttons.Count; i++)
 		{
 			byte index = (byte)i;
-			buttons[i].OnClick(() => LobbyNetworkManager.Cmd_ButtonPressed(NetworkID, (byte)i));
+			buttons[i].OnClick(() => LobbyNetworkManager.Cmd_ButtonPressed(NetworkID, index));
 		}
 	}
 

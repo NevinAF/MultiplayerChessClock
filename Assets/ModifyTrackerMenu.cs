@@ -196,9 +196,7 @@ public class ModifyTrackerMenu : SingletonMono<ModifyTrackerMenu>
 	private static NumberPadPopup.InputOptions TimeRemainingOptions = new NumberPadPopup.InputOptions
 	{
 		Title = "Edit Time Remaining",
-		NumberOfFormats = 3,
-		Formatter = (int unit, int value) => Formatting.Time(value * Math.Pow(60, unit)),
-		UnitsText = "s/m/h",
+		Type = NumberPadPopup.InputType.Duration,
 		InitialText = null,
 		OnSuccess = value => {
 			value *= (int)Math.Pow(60, NumberPadPopup.Instance.UnitType);

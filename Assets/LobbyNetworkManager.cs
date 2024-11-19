@@ -69,6 +69,8 @@ public class LobbyNetworkManager : NetworkBehaviour
 	public static byte TrackerCount => (byte)Instance.trackers.Count;
 	public static int ActionCount => Instance.actions.Count;
 
+	public SDispatcher<string> LobbyName;
+
 	public void Awake()
 	{
 		m_instance = this;
@@ -80,6 +82,8 @@ public class LobbyNetworkManager : NetworkBehaviour
 		disconnectTime = Time.timeAsDouble - NetworkTime.time;
 		trackers.OnChange -= CallOnTrackersChange;
 		actions.OnChange -= CallOnActionsChange;
+
+		LobbyName.Value = "<Disconnected>";
 	}
 
 	public override void OnStartClient()
@@ -87,6 +91,8 @@ public class LobbyNetworkManager : NetworkBehaviour
 		disconnectTime = double.NaN;
 		trackers.OnChange += CallOnTrackersChange;
 		actions.OnChange += CallOnActionsChange;
+
+		LobbyName.Value = "Lobby " + NetworkManager.singleton.networkAddress;
 		
 		// Process initial SyncList payload
 		if (!isServer)
@@ -119,6 +125,7 @@ public class LobbyNetworkManager : NetworkBehaviour
 	[Command(requiresAuthority = false)]
 	private void Server_ButtonPressed(byte tracker, byte buttonIndex)
 	{
+		UnityEngine.Debug.Log("Button pressed: " + tracker + ", " + buttonIndex);
 		for (int i = 0; i < actions.Count; i++)
 		{
 			if (actions[i].attachedTracker != tracker || actions[i].buttonIndex != buttonIndex)

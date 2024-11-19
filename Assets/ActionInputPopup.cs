@@ -55,6 +55,7 @@ public class ActionInputPopup : InputPopup<ActionInputPopup, SerializedActionDat
 		}
 
 		EditTarget = options.editTarget;
+		OnDelete = options.OnDelete;
 		if (options.editTarget >= 0)
 		{
 			var data = LobbyNetworkManager.GetTrackerActionData(options.editTarget);
@@ -120,6 +121,9 @@ public class ActionInputPopup : InputPopup<ActionInputPopup, SerializedActionDat
 	public SDispatcher<bool> EditTargetValid;
 	public SDispatcher<bool> TypeValid;
 
+
+	public SDispatcher<string> TypeName;
+
 	public TrackerDispatchers TargetTracker;
 	public TrackerDispatchers AttachedTracker;
 
@@ -142,6 +146,7 @@ public class ActionInputPopup : InputPopup<ActionInputPopup, SerializedActionDat
 			}
 			else {
 				data.data = TypeDataInput[value - 1].DefaultData;
+				UnityEngine.Debug.Log("Setting default data for type: " + data.data);
 			}
 		}
 
@@ -209,7 +214,7 @@ public class ActionInputPopup : InputPopup<ActionInputPopup, SerializedActionDat
 		for (int i = maxButtonIndex + 1; i < ButtonIndexInputs.Count; i++)
 			ButtonIndexInputs[i].gameObject.SetActive(false);
 
-		ButtonIndex.Value = Math.Min(ButtonIndex, (byte)maxButtonIndex);
+		ButtonIndex.Value = Math.Min(ButtonIndex, (byte)(maxButtonIndex + 1));
 		// ButtonIndexIncrementValid.Value = ButtonIndex < maxButtonIndex;
 	}
 
@@ -235,6 +240,10 @@ public class ActionInputPopup : InputPopup<ActionInputPopup, SerializedActionDat
 			TypeDataInput[result.type - 1].action.Dispatcher.SetNetworkData(ResultNetworkData);
 			TypeDataInput[result.type - 1].UpdatePreview();
 			TypeDataInput[result.type - 1].action.ApplySolo(emptyList);
+			TypeName.Value = TypeDataInput[result.type - 1].Name;
+		}
+		else {
+			TypeName.Value = "<Select Action Type>";
 		}
 
 		base.UpdatePreview();
