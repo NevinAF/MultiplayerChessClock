@@ -88,7 +88,10 @@ public class TrackerDispatchers : MonoBehaviour
 
 	private void OnValidate()
 	{
-		HumanReadableTime.Value = Formatting.Time(SetTime);
-		Icon.Value = GlobalSpriteList.GetSprite(IconIndex);
+		if (HumanReadableTime != null && SetTime != null)
+			HumanReadableTime.Value = Formatting.Time(SetTime);
+
+		if (Icon != null && IconIndex != null)
+			Icon.Value = GlobalSpriteList.GetSprite(IconIndex);
 	}
 }
