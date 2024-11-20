@@ -17,7 +17,7 @@ public class ConnectionPanel : MonoBehaviour
 
 	public double lobbyTimeout = 10;
 
-	public Dictionary<ServerResponse, LobbyButton> discoveredServers = new Dictionary<ServerResponse, LobbyButton>();
+	public SortedList<ServerResponse, LobbyButton> discoveredServers = new SortedList<ServerResponse, LobbyButton>();
 
 	private void OnEnable()
 	{
@@ -45,12 +45,13 @@ public class ConnectionPanel : MonoBehaviour
 			return;
 		}
 
-		foreach (KeyValuePair<ServerResponse, LobbyButton> kvp in discoveredServers)
+		for (int i = discoveredServers.Count - 1; i >= 0; i--)
 		{
-			if (Time.timeAsDouble > kvp.Value.TimeoutAt)
+			var button = discoveredServers.Values[i];
+			if (Time.timeAsDouble > button.TimeoutAt)
 			{
-				Destroy(kvp.Value.gameObject);
-				discoveredServers.Remove(kvp.Key);
+				Destroy(button.gameObject);
+				discoveredServers.RemoveAt(i);
 			}
 		}
 	}
@@ -77,7 +78,7 @@ public class ConnectionPanel : MonoBehaviour
 			lobby.IP.text = info.uri + " " + info.EndPoint.Address;
 			lobby.Button.onClick.AddListener(() => networkManager.StartClient(info.uri));
 
-			discoveredServers[info] = lobby;
+			discoveredServers.Add(info, lobby);
 		}
 
 		lobby.TimeoutAt = Time.timeAsDouble + lobbyTimeout;
