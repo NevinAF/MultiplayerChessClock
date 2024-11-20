@@ -15,6 +15,10 @@ public class ConnectionPanel : MonoBehaviour
 
 	public UnityEvent Connected;
 
+	public double lobbyTimeout = 10;
+
+	public Dictionary<ServerResponse, LobbyButton> discoveredServers = new Dictionary<ServerResponse, LobbyButton>();
+
 	private void OnEnable()
 	{
 		while (LobbyParent.childCount > 0)
@@ -31,27 +35,56 @@ public class ConnectionPanel : MonoBehaviour
 		{
 			Connected?.Invoke();
 			gameObject.SetActive(false);
+			networkDiscovery.StopDiscovery();
+
+			if (NetworkServer.active)
+			{
+				networkDiscovery.AdvertiseServer();
+			}
+
+			return;
+		}
+
+		foreach (KeyValuePair<ServerResponse, LobbyButton> kvp in discoveredServers)
+		{
+			if (Time.timeAsDouble > kvp.Value.TimeoutAt)
+			{
+				Destroy(kvp.Value.gameObject);
+				discoveredServers.Remove(kvp.Key);
+			}
 		}
 	}
 
-
-
 	private void OnDisable()
 	{
-		networkDiscovery.StopDiscovery();
+	}
+
+	public void OnRefresh()
+	{
+		while (LobbyParent.childCount > 0)
+		{
+			Destroy(LobbyParent.GetChild(0).gameObject);
+		}
+
+		networkDiscovery.StartDiscovery();
 	}
 
 	public void DiscoveredServer(ServerResponse info)
 	{
-		UnityEngine.Debug.Log("Discovered Server: " + info.EndPoint.Address + " " + info.uri);
-		LobbyButton lobby = Instantiate(LobbyPrefab, LobbyParent);
-		lobby.IP.text = info.uri + " " + info.EndPoint.Address;
-		lobby.Button.onClick.AddListener(() => networkManager.StartClient(info.uri));
+		if (!discoveredServers.TryGetValue(info, out LobbyButton lobby))
+		{
+			lobby = Instantiate(LobbyPrefab, LobbyParent);
+			lobby.IP.text = info.uri + " " + info.EndPoint.Address;
+			lobby.Button.onClick.AddListener(() => networkManager.StartClient(info.uri));
+
+			discoveredServers[info] = lobby;
+		}
+
+		lobby.TimeoutAt = Time.timeAsDouble + lobbyTimeout;
 	}
 
 	public void HostLAN()
 	{
 		networkManager.StartHost();
-		networkDiscovery.AdvertiseServer();
 	}
 }

@@ -38,7 +38,6 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -502,7 +501,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 378953672}
-  - component: {fileID: 378953671}
   - component: {fileID: 378953675}
   - component: {fileID: 378953674}
   - component: {fileID: 378953673}
@@ -513,20 +511,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &378953671
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 378953670}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cab7541fcc04d3c4784b6ed118f35d8b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  LabelTMP: {fileID: 744287638}
-  TimeTMP: {fileID: 1257620505}
 --- !u!224 &378953672
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2698,7 +2682,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 378953671}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: TimerMenu, Assembly-CSharp
         m_MethodName: SaveAndClose
         m_Mode: 1
@@ -2832,7 +2816,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 378953671}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: TimerMenu, Assembly-CSharp
         m_MethodName: Remove
         m_Mode: 1
@@ -2958,6 +2942,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
   m_SortingOrder: 0
@@ -4342,7 +4327,6 @@ MonoBehaviour:
   autoCreatePlayer: 1
   playerSpawnMethod: 0
   spawnPrefabs:
-  - {fileID: 8829149605948425510, guid: 8b59c534f60433244a34862d834450bd, type: 3}
   - {fileID: 9196596990978067155, guid: dd4e961c3ade77847b64f8190e46082a, type: 3}
   exceptionsDisconnect: 1
   snapshotSettings:

@@ -9,4 +9,6 @@ public class LobbyButton : MonoBehaviour
 
 	public Button m_button;
 	public Button Button => m_button != null ? m_button : m_button = GetComponent<Button>();
+
+	public double TimeoutAt;
 }
