@@ -32,7 +32,7 @@ public struct TrackerNetworkData
 
 	public int iconIndex;
 	// bool active : 1; short x : 13; short y : 13; byte size : 5;
-	private int active_xy_size;
+	public int active_xy_size;
 
 	public bool Valid
 	{
@@ -79,6 +79,6 @@ public struct TrackerNetworkData
 
 	public override string ToString()
 	{
-		return $"{{{name} {rank} {color32} {setTime} {TimeRemaining} {TimerActive} {iconIndex} {Valid} {X} {Y} {Size}}}";
+		return $"{{{(Valid ? "V" : "I")} {name} {rank} {color32} icon{iconIndex} {TimerActive}_{TimeRemaining} {X} {Y} {Size}}}";
 	}
 }

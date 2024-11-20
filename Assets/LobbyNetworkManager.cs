@@ -60,8 +60,8 @@ public class LobbyNetworkManager : NetworkBehaviour
 	public static Action<SyncList<TrackerNetworkData>.Operation, int, TrackerNetworkData> OnTrackersChange;
 	public static Action<SyncList<TrackerActionNetworkData>.Operation, int, TrackerActionNetworkData> OnActionsChange;
 
-	private readonly SyncList<TrackerNetworkData> trackers = new SyncList<TrackerNetworkData>(backing_trackers);
-	private readonly SyncList<TrackerActionNetworkData> actions = new SyncList<TrackerActionNetworkData>(backing_actions);
+	public readonly SyncList<TrackerNetworkData> trackers = new SyncList<TrackerNetworkData>(backing_trackers);
+	public readonly SyncList<TrackerActionNetworkData> actions = new SyncList<TrackerActionNetworkData>(backing_actions);
 
 	private static double disconnectTime = 0;
 	public static double CTime => double.IsNaN(disconnectTime) ? NetworkTime.time : Time.timeAsDouble - disconnectTime;
@@ -74,6 +74,11 @@ public class LobbyNetworkManager : NetworkBehaviour
 	public void Awake()
 	{
 		m_instance = this;
+
+#if DEBUG
+		OnTrackersChange += (op, index, data) => Debug.Log("Tracker " + op + " " + index + ": " + data);
+		OnActionsChange += (op, index, data) => Debug.Log("Action " + op + " " + index + ": " + data);
+#endif
 	}
 
 	// on any type of disconnect
@@ -105,7 +110,7 @@ public class LobbyNetworkManager : NetworkBehaviour
 	public static void ReinitializeSyncList<T>(SyncList<T> list, Action<SyncList<T>.Operation, int, T> callback)
 	{
 		callback?.Invoke(SyncList<T>.Operation.OP_CLEAR, 0, default);
-		for (int i = 0; i < Instance.actions.Count; i++)
+		for (int i = 0; i < list.Count; i++)
 			callback?.Invoke(SyncList<T>.Operation.OP_ADD, i, list[i]);
 	}
 
