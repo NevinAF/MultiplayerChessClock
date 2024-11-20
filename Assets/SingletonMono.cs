@@ -7,6 +7,8 @@ public abstract class SingletonMono<T> : MonoBehaviour where T : SingletonMono<T
 	{
 		get
 		{
+			UnityEngine.Debug.Log("SingletonMono<" + typeof(T).Name + ">.Instance");
+
 			if (m_instance == null)
 				m_instance = FindObjectOfType<T>(true);
 			if (m_instance == null)

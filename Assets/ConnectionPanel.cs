@@ -17,12 +17,12 @@ public class ConnectionPanel : MonoBehaviour
 
 	private void OnEnable()
 	{
-		networkDiscovery.StartDiscovery();
-
 		while (LobbyParent.childCount > 0)
 		{
 			Destroy(LobbyParent.GetChild(0).gameObject);
 		}
+
+		networkDiscovery.StartDiscovery();
 	}
 
 	private void Update()
@@ -43,6 +43,7 @@ public class ConnectionPanel : MonoBehaviour
 
 	public void DiscoveredServer(ServerResponse info)
 	{
+		UnityEngine.Debug.Log("Discovered Server: " + info.EndPoint.Address + " " + info.uri);
 		LobbyButton lobby = Instantiate(LobbyPrefab, LobbyParent);
 		lobby.IP.text = info.uri + " " + info.EndPoint.Address;
 		lobby.Button.onClick.AddListener(() => networkManager.StartClient(info.uri));

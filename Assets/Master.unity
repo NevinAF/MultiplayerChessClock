@@ -38,7 +38,6 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2357,7 +2356,7 @@ MonoBehaviour:
             m_FloatArgument: 0
             m_StringArgument: 
             m_BoolArgument: 0
-          m_CallState: 2
+          m_CallState: 1
   Prefab: {fileID: 9018973894501539870, guid: 7e0c2984fa298e546b0652f673bab635, type: 3}
   ActionPrefabs:
   - {fileID: 3717277019575167473, guid: 014e750b627724344b277b1b9de705a9, type: 3}
@@ -2967,7 +2966,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 243
+  m_text: 0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d9b454495b7d24a7a933eb61bdfa0607, type: 2}
   m_sharedMaterial: {fileID: 7409485994217783921, guid: d9b454495b7d24a7a933eb61bdfa0607, type: 2}
@@ -7267,7 +7266,6 @@ GameObject:
   m_Component:
   - component: {fileID: 281740339}
   - component: {fileID: 281740341}
-  - component: {fileID: 281740340}
   m_Layer: 5
   m_Name: Connect
   m_TagString: Untagged
@@ -7298,39 +7296,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &281740340
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 281740338}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c761308e733c51245b2e8bb4201f46dc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enableActiveDiscovery: 1
-  BroadcastAddress: 
-  serverBroadcastListenPort: 47777
-  ActiveDiscoveryInterval: 3
-  transport: {fileID: 485163339}
-  OnServerFound:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 281740341}
-        m_TargetAssemblyTypeName: ConnectionPanel, Assembly-CSharp
-        m_MethodName: DiscoveredServer
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  secretHandshake: -6585606509470055986
 --- !u!114 &281740341
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7345,7 +7310,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LobbyPrefab: {fileID: 1958722581156146861, guid: 5c58bf944c104bf47bffd289cd80979c, type: 3}
   LobbyParent: {fileID: 1379254467}
-  networkDiscovery: {fileID: 281740340}
+  networkDiscovery: {fileID: 485163342}
   networkManager: {fileID: 485163340}
   Connected:
     m_PersistentCalls:
@@ -12132,6 +12097,7 @@ GameObject:
   - component: {fileID: 485163341}
   - component: {fileID: 485163340}
   - component: {fileID: 485163339}
+  - component: {fileID: 485163342}
   m_Layer: 0
   m_Name: Network Manager
   m_TagString: Untagged
@@ -12230,6 +12196,39 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &485163342
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 485163337}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c761308e733c51245b2e8bb4201f46dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableActiveDiscovery: 1
+  BroadcastAddress: 
+  serverBroadcastListenPort: 47777
+  ActiveDiscoveryInterval: 3
+  transport: {fileID: 485163339}
+  OnServerFound:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 281740341}
+        m_TargetAssemblyTypeName: ConnectionPanel, Assembly-CSharp
+        m_MethodName: DiscoveredServer
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  secretHandshake: -6585606509470055986
 --- !u!1 &492676100
 GameObject:
   m_ObjectHideFlags: 0
@@ -29432,6 +29431,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
   m_SortingOrder: 0

@@ -10,9 +10,7 @@ public class SDispatcher<T>
 	: ISerializationCallbackReceiver
 #endif
 {
-#if UNITY_EDITOR
 	[SerializeField] public bool hideValue = false;
-#endif
 	[SerializeField] protected T m_value;
 	[SerializeField] public UnityEvent<T> OnChange;
 
