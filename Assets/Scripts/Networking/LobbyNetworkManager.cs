@@ -70,14 +70,19 @@ public class LobbyNetworkManager : NetworkBehaviour
 	public static int ActionCount => Instance.actions.Count;
 
 	public SDispatcher<string> LobbyName;
+	public SDispatcher<int> PlayerCount;
 
 	public void Awake()
 	{
 		m_instance = this;
 
+		Player.OnPlayerAdded += _ => PlayerCount.Value = Player.Players.Count;
+		Player.OnPlayerRemoved += _ => PlayerCount.Value = Player.Players.Count;
+
 #if DEBUG
 		OnTrackersChange += (op, index, data) => Debug.Log("Tracker " + op + " " + index + ": " + data);
 		OnActionsChange += (op, index, data) => Debug.Log("Action " + op + " " + index + ": " + data);
+		PlayerCount.Attach(count => Debug.Log("Player count updated: " + count));
 #endif
 	}
 
@@ -148,15 +153,13 @@ public class LobbyNetworkManager : NetworkBehaviour
 			if (!trackers[index].Valid)
 				break;
 
-		var data = new TrackerNetworkData {
-			Valid = true,
-			name = "Tracker " + (index + 1),
-			color32 = ColorWheelPopup.RandomColor,
-			TimeRemaining = 300,
-			TimerActive = false,
-			rank = "RR",
-			iconIndex = GlobalSpriteList.RandomIconIndex
-		};
+		var data = new TrackerNetworkData(
+			name:      "Tracker " + (index + 1),
+			rank:      "RR",
+			iconIndex: (ushort)GlobalSpriteList.RandomIconIndex,
+			color:     ColorWheelPopup.RandomColor,
+			time:      300
+		);
 
 		if (index == trackers.Count)
 			trackers.Add(data);
@@ -169,7 +172,7 @@ public class LobbyNetworkManager : NetworkBehaviour
 	private void Server_DuplicateTracker(int sourceId)
 	{
 		var data = GetTrackerData(sourceId);
-		data.name = (data.name.Length > 15 ? data.name.Substring(0, 15) : data.name) + " (Copy)";
+		data.SetName((data.Name.Length > 15 ? data.Name.Substring(0, 15) : data.Name) + " (Copy)");
 
 		int index;
 		for (index = 0; index < trackers.Count; index++)
@@ -187,7 +190,7 @@ public class LobbyNetworkManager : NetworkBehaviour
 	private void Server_RemoveTracker(int index)
 	{
 		var data = GetTrackerData(index);
-		data.Valid = false;
+		data.Invalidate();
 		Server_SetTracker(index, data);
 	}
 	public static void Cmd_RemoveTracker(int index) => Instance.Server_RemoveTracker(index);
@@ -197,19 +200,20 @@ public class LobbyNetworkManager : NetworkBehaviour
 	public static void Cmd_ChangeTracker(int index, TrackerNetworkData data) => Instance.Server_ChangeTracker(index, data);
 
 	[Command(requiresAuthority = false)]
-	private void Server_ChangeTracker_TimeRemaining(int index, double time)
+	private void Server_ChangeTracker_PhysicalTimeRemaining(int index, float time)
 	{
 		var data = GetTrackerData(index);
-		data.TimeRemaining = time;
+		data.SetPhysicalTimeRemaining(time);
 		Server_SetTracker(index, data);
 	}
-	public static void Cmd_ChangeTracker_TimeRemaining(int index, double time) => Instance.Server_ChangeTracker_TimeRemaining(index, time);
+	public static void Cmd_ChangeTracker_PhysicalTimeRemaining(int index, float time) => Instance.Server_ChangeTracker_PhysicalTimeRemaining(index, time);
 
 	[Command(requiresAuthority = false)]
 	private void Server_ChangeTracker_TimerActive(int index, bool active)
 	{
 		var data = GetTrackerData(index);
-		data.TimerActive = active;
+		if (active) data.StartTimer();
+		else data.StopTimer();
 		Server_SetTracker(index, data);
 	}
 	public static void Cmd_ChangeTracker_TimerActive(int index, bool active) => Instance.Server_ChangeTracker_TimerActive(index, active);
@@ -218,7 +222,7 @@ public class LobbyNetworkManager : NetworkBehaviour
 	private void Server_ChangeTracker_Name(int index, string name)
 	{
 		var data = GetTrackerData(index);
-		data.name = name;
+		data.SetName(name);
 		Server_SetTracker(index, data);
 	}
 	public static void Cmd_ChangeTracker_Name(int index, string name) => Instance.Server_ChangeTracker_Name(index, name);
@@ -227,7 +231,7 @@ public class LobbyNetworkManager : NetworkBehaviour
 	private void Server_ChangeTracker_Color(int index, Color32 color)
 	{
 		var data = GetTrackerData(index);
-		data.color32 = color;
+		data.SetColor(color);
 		Server_SetTracker(index, data);
 	}
 	public static void Cmd_ChangeTracker_Color(int index, Color32 color) => Instance.Server_ChangeTracker_Color(index, color);
@@ -236,7 +240,7 @@ public class LobbyNetworkManager : NetworkBehaviour
 	private void Server_ChangeTracker_Rank(int index, string rank)
 	{
 		var data = GetTrackerData(index);
-		data.rank = rank;
+		data.SetRank(rank);
 		Server_SetTracker(index, data);
 	}
 	public static void Cmd_ChangeTracker_Rank(int index, string rank) => Instance.Server_ChangeTracker_Rank(index, rank);
@@ -245,7 +249,7 @@ public class LobbyNetworkManager : NetworkBehaviour
 	private void Server_ChangeTracker_IconIndex(int index, int iconIndex)
 	{
 		var data = GetTrackerData(index);
-		data.iconIndex = iconIndex;
+		data.SetIconIndex((ushort)iconIndex);
 		Server_SetTracker(index, data);
 	}
 	public static void Cmd_ChangeTracker_IconIndex(int index, int iconIndex) => Instance.Server_ChangeTracker_IconIndex(index, iconIndex);

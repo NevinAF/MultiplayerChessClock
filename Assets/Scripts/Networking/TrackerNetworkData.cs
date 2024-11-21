@@ -1,84 +1,123 @@
 using System;
+using System.Globalization;
 using System.Runtime.InteropServices;
+using Unity.Mathematics;
 using UnityEngine;
 
 public struct TrackerNetworkData
 {
+	public byte m_flags;
 	[MarshalAs(UnmanagedType.LPStr, SizeConst = 20)]
-	public string name;
-
+	public string m_name;
 	[MarshalAs(UnmanagedType.LPStr, SizeConst = 4)]
-	public string rank;
-	
-	public Color32 color32;
+	public string m_rank;
+	public ushort m_icon;
+	public Color32 m_color;
+	/// <summary>
+	/// The time in seconds remaining.
+	/// </summary>
+	public float m_time;
+	/// <summary>
+	/// IF TimerActive, this represents the network time which the turn time will run out.
+	/// </summary>
+	public double m_turnTime;
 
-	public double setTime;
+	public TrackerNetworkData(
+		string name,
+		string rank,
+		ushort iconIndex,
+		Color32 color,
+		float time
+	) {
+		m_flags = 1;
+		m_name = name;
+		m_rank = rank;
+		m_icon = iconIndex;
+		m_color = color;
+		m_time = time;
+		m_turnTime = 0;
+	}
 
-	public double TimeRemaining
+	public readonly bool Valid => (m_flags & 1) == 1;
+	public void Invalidate() => m_flags &= 0xFE;
+	public void Validate() => m_flags |= 1;
+
+	public readonly bool TimerActive => (m_flags & 2) == 2;
+	public void StartTimer()
 	{
-		readonly get => TimerActive ? setTime - LobbyNetworkManager.CTime : setTime;
-		set {
-			long activeBit = BitConverter.DoubleToInt64Bits(setTime) & 1L;
-			setTime = BitConverter.Int64BitsToDouble((BitConverter.DoubleToInt64Bits(
-				activeBit == 1L ? value + LobbyNetworkManager.CTime : value
-			) & ~1L) | activeBit);
+		if (TimerActive)
+			return;
+
+		// Should never have negative time when starting the timer.
+		if (m_turnTime < 0) m_turnTime = 0;
+
+		m_flags |= 2;
+		m_turnTime += LobbyNetworkManager.CTime;
+	}
+	public void StopTimer()
+	{
+		if (!TimerActive)
+			return;
+
+		m_flags &= 0xFD;
+
+		// If more time has passed than on the turn timer, 
+		m_turnTime -= LobbyNetworkManager.CTime;
+		if (m_turnTime < 0)
+			m_time += (float)m_turnTime;
+	}
+
+	public readonly string Name => m_name;
+	public void SetName(string value)
+	{
+		if (value.Length > 20)
+		{
+			UnityEngine.Debug.LogError("Name must be 20 characters or less");
+			value = value.Substring(0, 20);
 		}
+		m_name = value;
 	}
-	public bool TimerActive
+
+	public readonly string Rank => m_rank;
+	public void SetRank(string value)
 	{
-		readonly get => (BitConverter.DoubleToInt64Bits(setTime) & 1L) == 1L;
-		set => setTime = CreateSetTime(TimeRemaining, value);
+		if (value.Length > 4)
+		{
+			UnityEngine.Debug.LogError("Rank must be 4 characters or less");
+			value = value.Substring(0, 4);
+		}
+		m_rank = value;
 	}
 
-	public int iconIndex;
-	// bool active : 1; short x : 13; short y : 13; byte size : 5;
-	public int active_xy_size;
+	public readonly ushort IconIndex => m_icon;
+	public void SetIconIndex(ushort value) => m_icon = value;
 
-	public bool Valid
+	public readonly Color32 Color => m_color;
+	public void SetColor(Color32 value) => m_color = value;
+
+	public readonly float PhysicalTimeRemaining => TimerActive && m_turnTime < LobbyNetworkManager.CTime
+		? m_time + (float)(m_turnTime - LobbyNetworkManager.CTime)
+		: m_time;
+	public void SetPhysicalTimeRemaining(float value)
 	{
-		readonly get => (active_xy_size & 1) == 1;
-		set => active_xy_size = value ? active_xy_size | 1 : active_xy_size & ~1;
+		if (TimerActive && m_turnTime < LobbyNetworkManager.CTime)
+			m_time = value - (float)(m_turnTime - LobbyNetworkManager.CTime);
+		else m_time = value;
 	}
+	public void IncPhysicalTimeRemaining(float value) => m_time += value;
 
-	public ushort X
+	public readonly float TurnTimeRemaining => TimerActive
+		? (float)(m_turnTime - LobbyNetworkManager.CTime)
+		: (float)m_turnTime;
+	public void SetTurnTimeRemaining(float value)
 	{
-		readonly get => (ushort)((active_xy_size >> 1) & 0x1FFF);
-		set => active_xy_size = (active_xy_size & 1) | (value << 1) | (active_xy_size & ~0x3FFF);
+		if (TimerActive)
+			m_turnTime = LobbyNetworkManager.CTime + value;
+		else m_turnTime = value;
 	}
-
-	public ushort Y
-	{
-		readonly get => (ushort)((active_xy_size >> 14) & 0x1FFF);
-		set => active_xy_size = (active_xy_size & 0x3FFF) | (value << 14);
-	}
-
-	public byte Size
-	{
-		readonly get => (byte)((active_xy_size >> 27) & 0x1F);
-		set => active_xy_size = (active_xy_size & 0x7FFFFFF) | (value << 27);
-	}
-
-	public static double CreateSetTime(double time, bool active)
-	{
-		long activeBit = active ? 1L : 0L;
-		return BitConverter.Int64BitsToDouble((BitConverter.DoubleToInt64Bits(
-			activeBit == 1L ? time + LobbyNetworkManager.CTime : time
-		) & ~1L) | activeBit);
-	}
-
-	public static bool IsSetTimeActive(double setTime)
-	{
-		return (BitConverter.DoubleToInt64Bits(setTime) & 1L) == 1L;
-	}
-
-	public static double GetSetTimeRemaining(double setTime)
-	{
-		return IsSetTimeActive(setTime) ? setTime - LobbyNetworkManager.CTime : setTime;
-	}
-
 
 	public override string ToString()
 	{
-		return $"{{{(Valid ? "V" : "I")} {name} {rank} {color32} icon{iconIndex} {TimerActive}_{TimeRemaining} {X} {Y} {Size}}}";
+		return $"{{{(Valid ? "V" : "I")} {m_name} {m_rank} {string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0:X2}{1:X2}{2:X2}", m_color.r, m_color.g, m_color.b)} icon_{m_icon} {(TimerActive ? "On" : "Off")}_{m_time:00}+{TurnTimeRemaining:00}}}";
 	}
 }

@@ -39,7 +39,7 @@ namespace Mirror.Discovery
         [SerializeField]
         [Tooltip("Time in seconds between multi-cast messages")]
         [Range(1, 60)]
-        float ActiveDiscoveryInterval = 3;
+        public float ActiveDiscoveryInterval = 3;
 
         [Tooltip("Transport to be advertised during discovery")]
         public Transport transport;

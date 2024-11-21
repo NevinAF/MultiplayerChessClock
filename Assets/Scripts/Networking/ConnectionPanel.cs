@@ -10,14 +10,14 @@ public class ConnectionPanel : MonoBehaviour
 {
 	public LobbyButton LobbyPrefab;
 	public Transform LobbyParent;
-	public NetworkDiscovery networkDiscovery;
+	public LobbyDiscovery networkDiscovery;
 	public NetworkManager networkManager;
 
 	public UnityEvent Connected;
 
-	public double lobbyTimeout = 10;
+	public double lobbyTimeoutBuffer = 3;
 
-	public SortedList<ServerResponse, LobbyButton> discoveredServers = new SortedList<ServerResponse, LobbyButton>();
+	public SortedList<LobbyServerResponse, LobbyButton> discoveredServers = new SortedList<LobbyServerResponse, LobbyButton>();
 
 	private void OnEnable()
 	{
@@ -27,6 +27,7 @@ public class ConnectionPanel : MonoBehaviour
 		}
 
 		networkDiscovery.StartDiscovery();
+		networkDiscovery.OnServerFound.AddListener(DiscoveredServer);
 	}
 
 	private void Update()
@@ -35,20 +36,13 @@ public class ConnectionPanel : MonoBehaviour
 		{
 			Connected?.Invoke();
 			gameObject.SetActive(false);
-			networkDiscovery.StopDiscovery();
-
-			if (NetworkServer.active)
-			{
-				networkDiscovery.AdvertiseServer();
-			}
-
 			return;
 		}
 
 		for (int i = discoveredServers.Count - 1; i >= 0; i--)
 		{
 			var button = discoveredServers.Values[i];
-			if (Time.timeAsDouble > button.TimeoutAt)
+			if (Time.timeAsDouble > button.lastUpdateTime + networkDiscovery.ActiveDiscoveryInterval + lobbyTimeoutBuffer)
 			{
 				Destroy(button.gameObject);
 				discoveredServers.RemoveAt(i);
@@ -58,30 +52,45 @@ public class ConnectionPanel : MonoBehaviour
 
 	private void OnDisable()
 	{
+		DestroyAll();
+		networkDiscovery.StopDiscovery();
+
+		if (NetworkServer.active)
+		{
+			networkDiscovery.AdvertiseServer();
+		}
+	}
+
+	private void DestroyAll()
+	{
+		for (int i = discoveredServers.Count - 1; i >= 0; i--)
+		{
+			Destroy(discoveredServers.Values[i].gameObject);
+		}
+		discoveredServers.Clear();
 	}
 
 	public void OnRefresh()
 	{
-		while (LobbyParent.childCount > 0)
-		{
-			Destroy(LobbyParent.GetChild(0).gameObject);
-		}
-
+		DestroyAll();
 		networkDiscovery.StartDiscovery();
 	}
 
-	public void DiscoveredServer(ServerResponse info)
+	public void DiscoveredServer(LobbyServerResponse info)
 	{
 		if (!discoveredServers.TryGetValue(info, out LobbyButton lobby))
 		{
 			lobby = Instantiate(LobbyPrefab, LobbyParent);
-			lobby.IP.text = info.uri + " " + info.EndPoint.Address;
 			lobby.Button.onClick.AddListener(() => networkManager.StartClient(info.uri));
 
 			discoveredServers.Add(info, lobby);
 		}
 
-		lobby.TimeoutAt = Time.timeAsDouble + lobbyTimeout;
+		lobby.lastUpdateTime = Time.timeAsDouble;
+		lobby.Name.Value = info.name;
+		lobby.IconIndex.Value = info.iconIndex;
+		lobby.PlayerCount.Value = info.playerCount;
+		lobby.Desc.Value = info.EndPoint.Address.ToString();
 	}
 
 	public void HostLAN()

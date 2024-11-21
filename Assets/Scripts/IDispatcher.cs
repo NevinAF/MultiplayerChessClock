@@ -10,7 +10,6 @@ public class SDispatcher<T>
 	: ISerializationCallbackReceiver
 #endif
 {
-	[SerializeField] public bool hideValue = false;
 	[SerializeField] protected T m_value;
 	[SerializeField] public UnityEvent<T> OnChange;
 
@@ -22,7 +21,6 @@ public class SDispatcher<T>
 #if UNITY_EDITOR
 			if (!Application.isPlaying)
 			{
-				hideValue = true;
 				m_value = value;
 				return;
 			}
@@ -51,11 +49,10 @@ public class SDispatcher<T>
 
 	public Action PipeTo(SDispatcher<T> other)
 	{
-		void action(T value) => other.Value = value;
-		Attach(action);
+		Attach(other.SetValue);
 		return () => {
 			if (this != null)
-				Detach(action);
+				Detach(other.SetValue);
 		};
 	}
 
@@ -76,7 +73,10 @@ public class SDispatcher<T>
 
 	public void OnAfterDeserialize()
 	{
-		UnityEditor.EditorApplication.delayCall += () => OnChange?.Invoke(m_value);
+		UnityEditor.EditorApplication.delayCall += () => {
+			if (!UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
+				OnChange?.Invoke(m_value);
+		};
 	}
 #endif
 
@@ -93,32 +93,28 @@ public class SDispatcherDrawer : UnityEditor.PropertyDrawer
 		// Foldout:
 		property.isExpanded = UnityEditor.EditorGUI.Foldout(new Rect(position.x, position.y, position.width, UnityEditor.EditorGUIUtility.singleLineHeight), property.isExpanded, label);
 
-		var hideValue = property.FindPropertyRelative("hideValue");
-		if (!hideValue.boolValue)
-		{
-			var value = property.FindPropertyRelative("m_value");
-			float height = UnityEditor.EditorGUI.GetPropertyHeight(value);
+		var value = property.FindPropertyRelative("m_value");
+		float height = UnityEditor.EditorGUI.GetPropertyHeight(value);
 
-			if (height != UnityEditor.EditorGUIUtility.singleLineHeight)
+		if (height != UnityEditor.EditorGUIUtility.singleLineHeight)
+		{
+			if (property.isExpanded)
 			{
-				if (property.isExpanded)
-				{
-					UnityEditor.EditorGUI.PropertyField(new Rect(position.x, position.y + UnityEditor.EditorGUIUtility.singleLineHeight, position.width, height), value, GUIContent.none, true);
-					position.y += height;
-				}
+				UnityEditor.EditorGUI.PropertyField(new Rect(position.x, position.y + UnityEditor.EditorGUIUtility.singleLineHeight, position.width, height), value, GUIContent.none, true);
+				position.y += height;
 			}
-			else {
-				UnityEditor.EditorGUI.PropertyField(new Rect(position.x + EditorGUIUtility.labelWidth, position.y, position.width, UnityEditor.EditorGUIUtility.singleLineHeight), value, GUIContent.none, false);
-			}
+		}
+		else {
+			UnityEditor.EditorGUI.PropertyField(new Rect(position.x + EditorGUIUtility.labelWidth, position.y, position.width, UnityEditor.EditorGUIUtility.singleLineHeight), value, GUIContent.none, false);
 		}
 		position.y += UnityEditor.EditorGUIUtility.singleLineHeight;
 
 		if (property.isExpanded)
 		{
 			var onChange = property.FindPropertyRelative("OnChange");
-			float height = UnityEditor.EditorGUI.GetPropertyHeight(onChange);
-			UnityEditor.EditorGUI.PropertyField(new Rect(position.x, position.y, position.width, height), onChange);
-			position.y += height;
+			float height2 = UnityEditor.EditorGUI.GetPropertyHeight(onChange);
+			UnityEditor.EditorGUI.PropertyField(new Rect(position.x, position.y, position.width, height2), onChange);
+			position.y += height2;
 		}
 	}
 
@@ -126,14 +122,10 @@ public class SDispatcherDrawer : UnityEditor.PropertyDrawer
 	{
 		float height = UnityEditor.EditorGUIUtility.singleLineHeight;
 
-		var hideValue = property.FindPropertyRelative("hideValue");
-		if (!hideValue.boolValue)
-		{
-			var value = property.FindPropertyRelative("m_value");
-			var h = UnityEditor.EditorGUI.GetPropertyHeight(value);
-			if (h != UnityEditor.EditorGUIUtility.singleLineHeight)
-				height += h;
-		}
+		var value = property.FindPropertyRelative("m_value");
+		var h = UnityEditor.EditorGUI.GetPropertyHeight(value);
+		if (h != UnityEditor.EditorGUIUtility.singleLineHeight)
+			height += h;
 
 		if (property.isExpanded)
 		{

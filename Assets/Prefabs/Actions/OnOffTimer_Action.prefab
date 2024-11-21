@@ -83,7 +83,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Valid:
-    hideValue: 0
     m_value: 1
     OnChange:
       m_PersistentCalls:
@@ -113,13 +112,11 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 1
   Name:
-    hideValue: 0
     m_value: 
     OnChange:
       m_PersistentCalls:
         m_Calls: []
   Color:
-    hideValue: 0
     m_value: {r: 0.7869853, g: 1, b: 0, a: 1}
     OnChange:
       m_PersistentCalls:
@@ -136,38 +133,32 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 1
-  SetTime:
-    hideValue: 0
-    m_value: 0
-    OnChange:
-      m_PersistentCalls:
-        m_Calls: []
   Rank:
-    hideValue: 0
     m_value: 
     OnChange:
       m_PersistentCalls:
         m_Calls: []
   IconIndex:
-    hideValue: 0
     m_value: 2
     OnChange:
       m_PersistentCalls:
         m_Calls: []
   TimerActive:
-    hideValue: 0
     m_value: 0
     OnChange:
       m_PersistentCalls:
         m_Calls: []
-  HumanReadableTime:
-    hideValue: 1
+  HR_PhysicalTimeRemaining:
     m_value: 0.0s
     OnChange:
       m_PersistentCalls:
         m_Calls: []
+  HR_TurnTimeRemaining:
+    m_value: 
+    OnChange:
+      m_PersistentCalls:
+        m_Calls: []
   Icon:
-    hideValue: 1
     m_value: {fileID: 21300000, guid: 63edeb0b7f7214dc38711d5331b5e15f, type: 3}
     OnChange:
       m_PersistentCalls:
@@ -283,6 +274,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   On: {fileID: 21300000, guid: 63edeb0b7f7214dc38711d5331b5e15f, type: 3}
   Off: {fileID: 21300000, guid: 92317040b37b0489da5a78f40e834c72, type: 3}
+  m_isOn: 0
 --- !u!1001 &5360152925255654626
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -427,3 +419,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Dispatcher: {fileID: 4661132546910122724}
   CopyFrom: {fileID: 1221914672694471876}
+  InvertLabel: Invert Timer I/O
+  OffLabel: Off Timer
+  OnLabel: On Timer
+  ToggleLabel: Toggle Timer
+  UseLabel: Copy Timer I/O

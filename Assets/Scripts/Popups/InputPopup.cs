@@ -74,6 +74,15 @@ public abstract class InputPopup<S, T, O, I> : SingletonMono<S>
 		}
 	}
 
+	protected static void UpdateQuickEntries()
+	{
+		if (QuickFillList == null)
+			return;
+
+		for (int i = 0; i < QuickFillList.Count; i++)
+			Instance.SetQuickFillEntry(QuickFillList[i], Instance.QuickFillEntries[i].Value);
+	}
+
 	private static void CreateQuickFillItem(QuickFillEntry entry)
 	{
 		I item = Instantiate(Instance.QuickFillPrefab, Instance.QuickFillGroup);

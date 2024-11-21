@@ -27,17 +27,6 @@ public class TrackerPresenter : MonoBehaviour
 
 	public TrackerDispatchers Dispatcher;
 
-	public SDispatcher<bool> Valid => Dispatcher.Valid;
-	public SDispatcher<string> Name => Dispatcher.Name;
-	public SDispatcher<Color> Color => Dispatcher.Color;
-	public SDispatcher<double> SetTime => Dispatcher.SetTime;
-	public SDispatcher<string> Rank => Dispatcher.Rank;
-	public SDispatcher<int> IconIndex => Dispatcher.IconIndex;
-	public SDispatcher<bool> TimerActive => Dispatcher.TimerActive;
-	public SDispatcher<string> HumanReadableTime => Dispatcher.HumanReadableTime;
-	public SDispatcher<Sprite> Icon => Dispatcher.Icon;
-
-
 	public List<TrackerButton> buttons = new List<TrackerButton>();
 	public RectTransform DefaultButtonGroup;
 
@@ -55,13 +44,12 @@ public class TrackerPresenter : MonoBehaviour
 #if DEBUG
 		m_hasStarted = true;
 #endif
-		Dispatcher.UpdateFromNetwork(NetworkID);
+		var data = LobbyNetworkManager.GetTrackerData(networkID);
+		Dispatcher.UpdateFromSource(data);
 	}
 
 	public void Update()
 	{
-		// Only recreate the string if time is changing. The string is always updated on SetTime change.
-		if (TimerActive.Value)
-			HumanReadableTime.Value = Formatting.Time(SetTime - LobbyNetworkManager.CTime);
+		Dispatcher.UpdateTimers();
 	}
 }

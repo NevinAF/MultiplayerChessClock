@@ -1,6 +1,8 @@
 public static class Formatting
 {
-	public static string Time(double time)
+	public static string Time(double time) => Time((float)time);
+
+	public static string Time(float time)
 	{
 		if (time < 0)
 			return "-" + Time(-time);

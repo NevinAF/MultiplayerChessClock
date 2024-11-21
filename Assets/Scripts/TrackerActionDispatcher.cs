@@ -30,7 +30,11 @@ public class TrackerActionDispatcher : MonoBehaviour
 
 		if (enabled)
 		{
-			Target.PipeFrom(NetworkData.target);
+			if (NetworkData.IsValid) {
+				Target.PipeFrom(NetworkData.target);
+			}
+			else
+				Target.ClearData();
 		}
 	}
 
@@ -50,7 +54,8 @@ public class TrackerActionDispatcher : MonoBehaviour
 
 	private void OnEnable()
 	{
-		Target.PipeFrom(NetworkData.target);
+		if (NetworkData.IsValid)
+			Target.PipeFrom(NetworkData.target);
 	}
 
 	private void OnDisable()

@@ -12,7 +12,6 @@ public class PopupManager : SingletonMono<PopupManager>
 
 	public static void RegisterClickOffLayer(Action action)
 	{
-		UnityEngine.Debug.Log("Registering click off layer");
 		Instance.ClickOffButton.gameObject.SetActive(true);
 		clickOffLayers.Push(action);
 	}

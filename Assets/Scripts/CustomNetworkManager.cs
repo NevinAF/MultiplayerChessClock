@@ -5,9 +5,11 @@ using TMPro;
 using UnityEngine.EventSystems;
 using System;
 using Mirror.Discovery;
+using System.Linq;
 
 public class CustomNetworkManager : NetworkManager
 {
+
 	// private bool tryClient = true;
 
 	// public NetworkDiscovery networkDiscovery;

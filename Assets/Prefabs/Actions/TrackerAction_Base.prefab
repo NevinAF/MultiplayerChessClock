@@ -428,7 +428,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3996016292637958439}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
@@ -508,14 +508,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Valid:
-    hideValue: 0
-    m_value: 1
+    m_value: 0
     OnChange:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 3473388323909463590}
           m_TargetAssemblyTypeName: SpriteToggle, Assembly-CSharp
-          m_MethodName: set_isOn
+          m_MethodName: SetIsOn
           m_Mode: 0
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -538,13 +537,11 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 1
   Name:
-    hideValue: 0
     m_value: 
     OnChange:
       m_PersistentCalls:
         m_Calls: []
   Color:
-    hideValue: 0
     m_value: {r: 0.97777843, g: 0, b: 1, a: 1}
     OnChange:
       m_PersistentCalls:
@@ -561,38 +558,32 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 1
-  SetTime:
-    hideValue: 0
-    m_value: 0
-    OnChange:
-      m_PersistentCalls:
-        m_Calls: []
   Rank:
-    hideValue: 0
     m_value: 
     OnChange:
       m_PersistentCalls:
         m_Calls: []
   IconIndex:
-    hideValue: 0
     m_value: 0
     OnChange:
       m_PersistentCalls:
         m_Calls: []
   TimerActive:
-    hideValue: 0
     m_value: 0
     OnChange:
       m_PersistentCalls:
         m_Calls: []
-  HumanReadableTime:
-    hideValue: 1
+  HR_PhysicalTimeRemaining:
     m_value: 0.0s
     OnChange:
       m_PersistentCalls:
         m_Calls: []
+  HR_TurnTimeRemaining:
+    m_value: 
+    OnChange:
+      m_PersistentCalls:
+        m_Calls: []
   Icon:
-    hideValue: 1
     m_value: {fileID: 21300000, guid: 776cef056b4044cec86888a5f6a112ae, type: 3}
     OnChange:
       m_PersistentCalls:
@@ -623,7 +614,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Target: {fileID: 3197967629398245580}
   ActionIcon:
-    hideValue: 0
     m_value: {fileID: 21300000, guid: 18fee10ad89ef499a8883b63c2f985f2, type: 3}
     OnChange:
       m_PersistentCalls:
@@ -641,7 +631,6 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 1
   Label:
-    hideValue: 0
     m_value: Invert Timer I/O
     OnChange:
       m_PersistentCalls:
@@ -659,7 +648,6 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 1
   Invalid:
-    hideValue: 0
     m_value: 0
     OnChange:
       m_PersistentCalls:
@@ -677,7 +665,6 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 1
   Disabled:
-    hideValue: 0
     m_value: 0
     OnChange:
       m_PersistentCalls:
@@ -695,7 +682,6 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 1
   Reduced:
-    hideValue: 0
     m_value: 0
     OnChange:
       m_PersistentCalls:
@@ -713,7 +699,6 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 1
   Editable:
-    hideValue: 0
     m_value: 0
     OnChange:
       m_PersistentCalls:

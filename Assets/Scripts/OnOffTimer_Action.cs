@@ -15,7 +15,6 @@ public class OnOffTimer_Action : TrackerAction
 	public override void ApplySolo(List<int> actionIds)
 	{
 		short toggleTarget = (short)NetworkData.data;
-		UnityEngine.Debug.Log("ApplySolo: " + actionIds.Count + " " + toggleTarget);
 
 		if (toggleTarget < 0) // Invert value of another tracker
 		{
@@ -75,6 +74,9 @@ public class OnOffTimer_Action : TrackerAction
 
 			UnityEngine.Debug.Log("Server_PreformActionPrefab: " + wantsActive);
 
-		targetNetworkData.TimerActive = wantsActive;
+		if (wantsActive)
+			targetNetworkData.StartTimer();
+		else
+			targetNetworkData.StopTimer();
 	}
 }

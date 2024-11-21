@@ -10,33 +10,31 @@ public class SpriteToggle : MonoBehaviour
 	public Sprite On;
 	public Sprite Off;
 
-	private bool m_isOn;
-	public bool isOn
-	{
-		get => m_isOn;
-		set
-		{
-			m_isOn = value;
-			Image.sprite = m_isOn ? On : Off;
-		}
-	}
-
-	public void Toggle()
-	{
-		isOn = !isOn;
-	}
+	[SerializeField] private bool m_isOn;
 
 	public void SetOnSprite(Sprite sprite)
 	{
 		On = sprite;
-		if (isOn)
+		if (m_isOn)
 			Image.sprite = On;
 	}
 
 	public void SetOffSprite(Sprite sprite)
 	{
 		Off = sprite;
-		if (!isOn)
+		if (!m_isOn)
+			Image.sprite = Off;
+	}
+
+	public void SetIsOn(bool isOn)
+	{
+		m_isOn = isOn;
+		if (Image == null)
+			return;
+
+		if (m_isOn)
+			Image.sprite = On;
+		else
 			Image.sprite = Off;
 	}
 
@@ -45,7 +43,7 @@ public class SpriteToggle : MonoBehaviour
 		if (Image == null)
 			return;
 
-		if (isOn)
+		if (m_isOn)
 			Image.sprite = On;
 		else
 			Image.sprite = Off;

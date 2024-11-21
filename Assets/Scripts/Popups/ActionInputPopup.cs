@@ -72,7 +72,12 @@ public class ActionInputPopup : InputPopup<ActionInputPopup, SerializedActionDat
 			TypeValid.Value = true;
 		}
 		else {
-			Result.Value = default;
+			Result.Value = new SerializedActionData
+			{
+				type = 0,
+				target = options.attachedTracker,
+				data = 0
+			};
 			ButtonIndex.Value = options.buttonIndex;
 			AttachedID = options.attachedTracker;
 
@@ -85,6 +90,8 @@ public class ActionInputPopup : InputPopup<ActionInputPopup, SerializedActionDat
 
 		UpdateMaxButtonIndex();
 		LobbyNetworkManager.OnActionsChange += UpdateMaxButtonIndex;
+
+		UpdateQuickEntries();
 	}
 
 
@@ -146,7 +153,6 @@ public class ActionInputPopup : InputPopup<ActionInputPopup, SerializedActionDat
 			}
 			else {
 				data.data = TypeDataInput[value - 1].DefaultData;
-				UnityEngine.Debug.Log("Setting default data for type: " + data.data);
 			}
 		}
 
@@ -257,24 +263,38 @@ public class ActionInputPopup : InputPopup<ActionInputPopup, SerializedActionDat
 		if (result.type != 0)
 		{
 			if (result.type != value.type)
-				score += ushort.MaxValue * 2;
-
-			if (result.target != value.target)
 				score += ushort.MaxValue;
-
+		
 			score += Math.Abs((short)result.data - (short)value.data);
 		}
+
+
+		if (result.target != value.target)
+			score += ushort.MaxValue * 2;
 
 		return score;
 	}
 
 	protected override void QuickFillClicked(SerializedActionData value)
 	{
+		if (value.type == 0)
+		{
+			value.type = value.target;
+			value.target = AttachedID;
+		}
+
 		Result.Value = value;
+		TypeValid.Value = true;
 	}
 
 	protected override void SetQuickFillEntry(ActionPopupQuickItem item, SerializedActionData value)
 	{
+		if (value.type == 0)
+		{
+			value.type = value.target;
+			value.target = AttachedID;
+		}
+
 		item.SetData(value.ToNetworkData());
 	}
 

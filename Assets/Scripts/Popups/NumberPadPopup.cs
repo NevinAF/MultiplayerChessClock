@@ -17,6 +17,7 @@ public class NumberPadPopup : InputPopup<NumberPadPopup, int, NumberPadPopup.Inp
 		public string InitialText;
 		public InputType Type;
 		public int MaxValue;
+		public bool disallowNegative;
 	}
 
 	protected override void OnShow(InputOptions options)
@@ -26,12 +27,13 @@ public class NumberPadPopup : InputPopup<NumberPadPopup, int, NumberPadPopup.Inp
 
 		Type = options.Type;
 		MaxValue = options.MaxValue;
+		NegativeAllowed.Value = !options.disallowNegative;
 		switch (options.Type)
 		{
 			case InputType.Duration:
 				UnitsText.Value = "s/m/h";
 				Formats = 3;
-				Formatter = (int unit, int value) => Formatting.Time(value * System.Math.Pow(60, unit));
+				Formatter = (int unit, int value) => Formatting.Time(value * Mathf.Pow(60f, unit));
 				break;
 		}
 	}
@@ -41,6 +43,7 @@ public class NumberPadPopup : InputPopup<NumberPadPopup, int, NumberPadPopup.Inp
 	public SDispatcher<string> UnitsText;
 	public SDispatcher<int> UnitType;
 	public SDispatcher<bool> IsntEmpty;
+	public SDispatcher<bool> NegativeAllowed;
 
 	public InputType Type { get; private set; }
 	public int MaxValue { get; private set; }
@@ -104,13 +107,13 @@ public class NumberPadPopup : InputPopup<NumberPadPopup, int, NumberPadPopup.Inp
 			switch (Type)
 			{
 				case InputType.Duration:
-					value *= (int)System.Math.Pow(60, UnitType.Value);
+					value *= (int)Mathf.Pow(60f, UnitType.Value);
 					break;
 			}
 
 			if (value > MaxValue)
 			{
-				RawText.Value = ((int)(MaxValue / System.Math.Pow(60, UnitType.Value))).ToString();
+				RawText.Value = ((int)(MaxValue / Mathf.Pow(60f, UnitType.Value))).ToString();
 				UpdatePreview();
 				return;
 			}
@@ -137,7 +140,7 @@ public class NumberPadPopup : InputPopup<NumberPadPopup, int, NumberPadPopup.Inp
 
 	protected override void SetQuickFillEntry(NumberPopupQuickItem item, int value)
 	{
-		item.Preview.text = Formatter(0, value);
+		item.Preview.text = Formatter(value, 0);
 		item.Value.text = value.ToString();
 	}
 
@@ -155,7 +158,7 @@ public class NumberPadPopup : InputPopup<NumberPadPopup, int, NumberPadPopup.Inp
 		switch (Type)
 		{
 			case InputType.Duration:
-				value = (int)(value / System.Math.Pow(60, UnitType.Value));
+				value = (int)(value / Mathf.Pow(60f, UnitType.Value));
 				break;
 		}
 		RawText.Value = value.ToString();

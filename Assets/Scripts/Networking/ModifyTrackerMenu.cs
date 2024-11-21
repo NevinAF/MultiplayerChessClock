@@ -114,7 +114,7 @@ public class ModifyTrackerMenu : SingletonMono<ModifyTrackerMenu>
 			var source = LobbyNetworkManager.GetTrackerData((-contextNetworkID) - 1);
 			var newData = LobbyNetworkManager.GetTrackerData(index);
 
-			if (source.iconIndex == newData.iconIndex && source.color32.Equals(newData.color32))
+			if (source.IconIndex == newData.IconIndex && source.Color.Equals(newData.Color))
 				SetContext(index);
 		}
 	}
@@ -202,7 +202,7 @@ public class ModifyTrackerMenu : SingletonMono<ModifyTrackerMenu>
 			value *= (int)Math.Pow(60, NumberPadPopup.Instance.UnitType);
 			NumberPadPopup.Instance.Result.Value = value;
 			if (Instance.contextNetworkID >= 0)
-				LobbyNetworkManager.Cmd_ChangeTracker_TimeRemaining(Instance.contextNetworkID, value);
+				LobbyNetworkManager.Cmd_ChangeTracker_PhysicalTimeRemaining(Instance.contextNetworkID, value);
 		}
 	};
 

@@ -11,7 +11,7 @@ public class ActionPopupQuickItem : InputPopupQuickItem
 		if (action == null || !action.NetworkData.Equals(target))
 		{
 			if (action != null)
-				Destroy(action);
+				Destroy(action.gameObject);
 
 			action = TrackerManager.CreateAction(target, ActionParent);
 			action.ApplySolo(ActionInputPopup.emptyList);

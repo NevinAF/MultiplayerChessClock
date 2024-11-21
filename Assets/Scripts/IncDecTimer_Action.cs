@@ -25,6 +25,6 @@ public class IncDecTimer_Action : TrackerAction
 	public override void Server_PreformActionPrefab(ref TrackerNetworkData targetNetworkData, ushort data)
 	{
 		UnityEngine.Debug.Log("Server_PreformActionPrefab: " + TimeShort.ToSeconds(data));
-		targetNetworkData.TimeRemaining += TimeShort.ToSeconds(data);
+		targetNetworkData.IncPhysicalTimeRemaining(TimeShort.ToSeconds(data));
 	}
 }
