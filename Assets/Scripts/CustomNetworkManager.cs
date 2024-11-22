@@ -6,67 +6,60 @@ using UnityEngine.EventSystems;
 using System;
 using Mirror.Discovery;
 using System.Linq;
+using UnityEngine.Events;
 
 public class CustomNetworkManager : NetworkManager
 {
 
 	// private bool tryClient = true;
 
-	// public NetworkDiscovery networkDiscovery;
+	public LobbyDiscovery networkDiscovery;
 	// public Button startHostButton;
 	// public Button startClientButton;
 	// public Button stopButton;
 
-	// public double discoveryTimeout = 0;
+	private bool returningHome = false;
 
-	// public override void Start()
-	// {
-	// 	base.Start();
+	public UnityEvent Disconnected;
+	public UnityEvent Connected;
+	public UnityEvent ReturnHome;
 
-	// 	startHostButton.onClick.AddListener(AdvertiseHost);
-	// 	startClientButton.onClick.AddListener(StartDiscovery);
-	// 	stopButton.onClick.AddListener(StopAll);
-	// }
+	public override void OnClientConnect()
+	{
+		base.OnClientConnect();
 
-	// public override void Update()
-	// {
-	// 	base.Update();
+		Connected?.Invoke();
+	}
 
-	// 	if (NetworkServer.active || NetworkClient.active)
-	// 	{
-	// 		startHostButton.interactable = false;
-	// 		startClientButton.interactable = false;
-	// 		stopButton.interactable = true;
-	// 	}
-	// 	else
-	// 	{
-	// 		startHostButton.interactable = Time.timeAsDouble - discoveryTimeout > 0;
-	// 		startClientButton.interactable = Time.timeAsDouble - discoveryTimeout > 0;
-	// 		stopButton.interactable = false;
-	// 	}
-	// }
+	public override void OnClientDisconnect()
+	{
+		base.OnClientDisconnect();
 
-	// public void StartDiscovery()
-	// {
-	// 	networkDiscovery.StartDiscovery();
-	// 	discoveryTimeout = Time.timeAsDouble + 5;
-	// }
+		if (!returningHome)
+		{
+			Disconnected?.Invoke();
+		}
+	}
 
-	// public void AdvertiseHost()
-	// {
-	// 	StartHost();
-	// 	networkDiscovery.AdvertiseServer();
-	// 	discoveryTimeout = 0;
-	// }
+	public void OnReturnHome()
+	{
+		returningHome = true;
+		StopAll();
+		ReturnHome?.Invoke();
+	}
 
-	// public void DiscoveredServer(ServerResponse info)
-	// {
-	// 	StartClient(info.uri);
-	// 	discoveryTimeout = 0;
-	// }
+	public override void Update()
+	{
+		if (NetworkServer.active && !networkDiscovery.IsAdvertising)
+		{
+			networkDiscovery.AdvertiseServer();
+		}
+		else returningHome = false;
+	}
 
 	public void StopAll()
 	{
+		networkDiscovery.StopDiscovery();
 		StopClient();
 		StopServer();
 		// discoveryTimeout = 0;

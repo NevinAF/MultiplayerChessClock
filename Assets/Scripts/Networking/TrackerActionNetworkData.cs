@@ -7,4 +7,9 @@ public struct TrackerActionNetworkData
 	public ushort data;
 
 	public readonly bool IsValid => type != 0;
+
+	public override string ToString()
+	{
+		return $"{{{attachedTracker}-{buttonIndex}: {type} {target} {data:X4}}}";
+	}
 }

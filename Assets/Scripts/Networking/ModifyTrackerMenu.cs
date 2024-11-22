@@ -26,7 +26,7 @@ public class ModifyTrackerMenu : SingletonMono<ModifyTrackerMenu>
 	{
 		int index = TrackerSelection.Count;
 		var instance = TrackerSelection.Initialize();
-		instance.transform.SetSiblingIndex(instance.transform.parent.childCount - 1);
+		instance.transform.SetSiblingIndex(instance.transform.parent.childCount - 2);
 		var button = instance.GetComponentInChildren<Button>(true);
 		button.enabled = true;
 		button.onClick.AddListener(() => SetContext(index));
@@ -162,17 +162,19 @@ public class ModifyTrackerMenu : SingletonMono<ModifyTrackerMenu>
 			case SyncList<TrackerActionNetworkData>.Operation.OP_INSERT:
 			{
 				var action = button.CreateAction(index, data);
-				action.Dispatcher.AddOnEditAction(() => OnEditAction(index));
+				action.Dispatcher.AddOnEditAction(() => {
+					OnEditAction(LobbyNetworkManager.GetActionIndex(action.transform.GetSiblingIndex() - 1, action.NetworkData));
+				});
 				break;
 			}
 			case SyncList<TrackerActionNetworkData>.Operation.OP_REMOVEAT:
 			{
-				button.DestroyAction(index);
+				button.DestroyAction(index, data);
 				break;
 			}
 			case SyncList<TrackerActionNetworkData>.Operation.OP_SET:
 			{
-				button.DestroyAction(index);
+				button.DestroyAction(index, data);
 				goto case SyncList<TrackerActionNetworkData>.Operation.OP_ADD;
 			}
 		}
@@ -198,6 +200,7 @@ public class ModifyTrackerMenu : SingletonMono<ModifyTrackerMenu>
 		Title = "Edit Time Remaining",
 		Type = NumberPadPopup.InputType.Duration,
 		InitialText = null,
+		MaxValue = int.MaxValue,
 		OnSuccess = value => {
 			value *= (int)Math.Pow(60, NumberPadPopup.Instance.UnitType);
 			NumberPadPopup.Instance.Result.Value = value;
@@ -262,7 +265,13 @@ public class ModifyTrackerMenu : SingletonMono<ModifyTrackerMenu>
 		ColorWheelPopup.Show(ColorOptions);
 	}
 
-	public void OnDeleteContext() => LobbyNetworkManager.Cmd_RemoveTracker(contextNetworkID);
+	public void OnDeleteContext()
+	{
+		ConfirmationPanel.Instance.Show("Delete Tracker?", "Are you sure you want to delete this tracker?", "Delete", () => {
+			if (contextNetworkID >= 0)
+				LobbyNetworkManager.Cmd_RemoveTracker(contextNetworkID);
+		});
+	}
 
 	private static SpriteInputPopup.InputOptions IconOptions = new SpriteInputPopup.InputOptions
 	{
@@ -275,6 +284,7 @@ public class ModifyTrackerMenu : SingletonMono<ModifyTrackerMenu>
 
 	public void OnEditIcon()
 	{
+		IconOptions.currentValue = Dispatchers.IconIndex.Value;
 		SpriteInputPopup.Show(IconOptions);
 	}
 

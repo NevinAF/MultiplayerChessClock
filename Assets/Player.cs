@@ -19,9 +19,13 @@ public class Player : NetworkBehaviour
 	[SyncVar(hook = nameof(CallOnDescriptionChanged))]
 	public string Description;
 
+	[SyncVar(hook = nameof(CallOnIsHostChanged))]
+	public bool IsHost;
+
 	public UnityEvent<string> OnUsernameChanged;
 	public UnityEvent<Sprite> OnIconChanged;
 	public UnityEvent<string> OnDescriptionChanged;
+	public UnityEvent<bool> OnIsHostChanged;
 
 	public override void OnStartClient()
 	{
@@ -43,6 +47,7 @@ public class Player : NetworkBehaviour
 	{
 		base.OnStartServer();
 		Description = connectionToClient.address;
+		IsHost = isLocalPlayer;
 	}
 
 	public override void OnStartAuthority()
@@ -74,6 +79,11 @@ public class Player : NetworkBehaviour
 	private void CallOnDescriptionChanged(string oldDescription, string newDescription)
 	{
 		OnDescriptionChanged?.Invoke(newDescription);
+	}
+
+	private void CallOnIsHostChanged(bool oldIsHost, bool newIsHost)
+	{
+		OnIsHostChanged?.Invoke(newIsHost);
 	}
 
 	private void SetUsername(string newUsername)

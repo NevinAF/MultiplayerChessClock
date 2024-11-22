@@ -642,7 +642,6 @@ MonoBehaviour:
   ActionsParent: {fileID: 5347474230823009123}
   Button: {fileID: 9150732616197493771}
   Invalid:
-    hideValue: 0
     m_value: 0
     OnChange:
       m_PersistentCalls:
@@ -660,7 +659,6 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 1
   NonInteractable:
-    hideValue: 0
     m_value: 0
     OnChange:
       m_PersistentCalls:
@@ -678,7 +676,6 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 1
   SomethingReduced:
-    hideValue: 0
     m_value: 0
     OnChange:
       m_PersistentCalls:
@@ -696,7 +693,6 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 1
   Name:
-    hideValue: 0
     m_value: Button 1
     OnChange:
       m_PersistentCalls:

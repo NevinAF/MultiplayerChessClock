@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -16,9 +17,9 @@ public class TrackerButtonPreview : TrackerButton
 		bool active = false;
 		bool interactable = true;
 
-		for (int i = 0; i < actions.Values.Count; i++)
+		for (int i = 0; i < actions.Count; i++)
 		{
-			TrackerAction action = actions.Values[i];
+			TrackerAction action = actions[i];
 			active |= !action.Dispatcher.Invalid;
 			interactable &= !action.Dispatcher.Disabled;
 		}
@@ -32,17 +33,17 @@ public class TrackerButtonPreview : TrackerButton
 		if (active)
 		{
 			reducingList.Clear();
-			reducingList.AddRange(actions.Keys);
+			for (int i = 0; i < actions.Count; i++)
+				reducingList.AddLast(new ReducingActionEntry(i, actions[i].NetworkData));
 
 			for (int i = 0; i < actions.Count; i++)
 			{
-				int key = actions.Keys[i];
-				TrackerAction action = actions.Values[i];
+				TrackerAction action = actions[i];
 
-				if (reducingList.Count > 0 && key == reducingList[0])
+				if (reducingList.Count > 0 && i == reducingList.First.Value.index)
 				{
 					action.Dispatcher.Reduced.Value = false;
-					reducingList.RemoveAt(0);
+					reducingList.RemoveFirst();
 					action.ApplySolo(reducingList);
 				}
 				else {
@@ -50,6 +51,10 @@ public class TrackerButtonPreview : TrackerButton
 					reduced = true;
 				}
 			}
+#if DEBUG
+			if (reducingList.Count > 0)
+				UnityEngine.Debug.LogError("ReducingList not empty after loop.");
+#endif
 		}
 		SomethingReduced.Value = reduced;
 	}

@@ -6,7 +6,7 @@ public class SetTimer_Action : TrackerAction
 {
 	public SDispatcher<string> Time;
 
-	public override void ApplySolo(List<int> actionIds)
+	public override void ApplySolo(LinkedList<ReducingActionEntry> actionIds = null)
 	{
 		Dispatcher.Label.Value = "Set Timer";
 

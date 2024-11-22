@@ -24,12 +24,8 @@ public class TimerColorController : MonoBehaviour
 
 	public void SetText(string text)
 	{
-		bool negative = text != null && text.StartsWith("-");
-		if (negative != isNegative)
-		{
-			isNegative = negative;
-			SetColor();
-		}
+		isNegative = text != null && text.StartsWith("-");
+		SetColor();
 	}
 
 	private void SetColor()

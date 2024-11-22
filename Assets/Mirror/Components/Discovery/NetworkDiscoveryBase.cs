@@ -57,6 +57,10 @@ namespace Mirror.Discovery
         protected UdpClient serverUdpClient;
         protected UdpClient clientUdpClient;
 
+		protected Task advertiseTask;
+
+		public bool IsAdvertising => advertiseTask != null && !advertiseTask.IsCompleted;
+
 #if UNITY_EDITOR
         public virtual void OnValidate()
         {
@@ -149,6 +153,7 @@ namespace Mirror.Discovery
             }
 
             CancelInvoke();
+			advertiseTask = null;
         }
 
         #region Server
@@ -171,7 +176,7 @@ namespace Mirror.Discovery
             };
 
             // listen for client pings
-            _ = ServerListenAsync();
+            advertiseTask = ServerListenAsync();
         }
 
         public async Task ServerListenAsync()

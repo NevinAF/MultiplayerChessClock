@@ -167,7 +167,7 @@ PrefabInstance:
       objectReference: {fileID: 21300000, guid: 776cef056b4044cec86888a5f6a112ae, type: 3}
     - target: {fileID: 3197967629398245580, guid: 1bccbbd2959e4ff4c9a7511ada9cab60, type: 3}
       propertyPath: Valid.m_value
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3197967629398245580, guid: 1bccbbd2959e4ff4c9a7511ada9cab60, type: 3}
       propertyPath: IconIndex.m_value
@@ -175,7 +175,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3735730611736884564, guid: 1bccbbd2959e4ff4c9a7511ada9cab60, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3735730611736884565, guid: 1bccbbd2959e4ff4c9a7511ada9cab60, type: 3}
       propertyPath: m_Pivot.x

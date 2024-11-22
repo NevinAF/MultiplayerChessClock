@@ -52,7 +52,7 @@ public struct TrackerNetworkData
 		if (m_turnTime < 0) m_turnTime = 0;
 
 		m_flags |= 2;
-		m_turnTime += LobbyNetworkManager.CTime;
+		m_turnTime += LobbyNetworkManager.RunTime;
 	}
 	public void StopTimer()
 	{
@@ -62,7 +62,7 @@ public struct TrackerNetworkData
 		m_flags &= 0xFD;
 
 		// If more time has passed than on the turn timer, 
-		m_turnTime -= LobbyNetworkManager.CTime;
+		m_turnTime -= LobbyNetworkManager.RunTime;
 		if (m_turnTime < 0)
 			m_time += (float)m_turnTime;
 	}
@@ -95,24 +95,28 @@ public struct TrackerNetworkData
 	public readonly Color32 Color => m_color;
 	public void SetColor(Color32 value) => m_color = value;
 
-	public readonly float PhysicalTimeRemaining => TimerActive && m_turnTime < LobbyNetworkManager.CTime
-		? m_time + (float)(m_turnTime - LobbyNetworkManager.CTime)
+	public readonly float PhysicalTimeRemaining => TimerActive && m_turnTime < LobbyNetworkManager.RunTime
+		? m_time + (float)(m_turnTime - LobbyNetworkManager.RunTime)
 		: m_time;
 	public void SetPhysicalTimeRemaining(float value)
 	{
-		if (TimerActive && m_turnTime < LobbyNetworkManager.CTime)
-			m_time = value - (float)(m_turnTime - LobbyNetworkManager.CTime);
+		if (TimerActive && m_turnTime < LobbyNetworkManager.RunTime)
+			m_time = value - (float)(m_turnTime - LobbyNetworkManager.RunTime);
 		else m_time = value;
 	}
 	public void IncPhysicalTimeRemaining(float value) => m_time += value;
 
 	public readonly float TurnTimeRemaining => TimerActive
-		? (float)(m_turnTime - LobbyNetworkManager.CTime)
+		? (float)(m_turnTime - LobbyNetworkManager.RunTime)
 		: (float)m_turnTime;
 	public void SetTurnTimeRemaining(float value)
 	{
 		if (TimerActive)
-			m_turnTime = LobbyNetworkManager.CTime + value;
+		{
+			if (m_turnTime < LobbyNetworkManager.RunTime)
+				m_time += (float)(m_turnTime - LobbyNetworkManager.RunTime);
+			m_turnTime = LobbyNetworkManager.RunTime + value;
+		}
 		else m_turnTime = value;
 	}
 

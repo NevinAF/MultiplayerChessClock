@@ -34,6 +34,8 @@ public class TrackerActionGrid : LayoutGroup
 
 	[SerializeField] protected Corner m_StartCorner = Corner.UpperLeft;
 
+	public RectTransform Background;
+
 	/// <summary>
 	/// Which corner should the first cell be placed in?
 	/// </summary>
@@ -78,12 +80,14 @@ public class TrackerActionGrid : LayoutGroup
 	{
 		base.CalculateLayoutInputHorizontal();
 
-		int minColumns = 1;
 		int preferredColumns = Mathf.Min(rectChildren.Count, m_ConstraintCount);
-		SetLayoutInputForAxis(
-			padding.horizontal + (cellSize.x + spacing.x) * minColumns - spacing.x,
+		float minSpace = padding.horizontal + (cellSize.x + spacing.x) * preferredColumns - spacing.x;
+		SetLayoutInputForAxis(minSpace, minSpace, -1, 0);
+
+		Background.sizeDelta = new Vector2(
 			padding.horizontal + (cellSize.x + spacing.x) * preferredColumns - spacing.x,
-			-1, 0);
+			Background.sizeDelta.y
+		);
 	}
 
 	/// <summary>
@@ -95,6 +99,16 @@ public class TrackerActionGrid : LayoutGroup
 		int minRows = Mathf.CeilToInt(rectChildren.Count / (float)m_ConstraintCount - 0.001f);
 		float minSpace = padding.vertical + (cellSize.y + spacing.y) * minRows - spacing.y;
 		SetLayoutInputForAxis(minSpace, minSpace, -1, 1);
+
+		rectTransform.sizeDelta = new Vector2(
+			rectTransform.sizeDelta.x,
+			minSpace
+		);
+
+		Background.sizeDelta = new Vector2(
+			Background.sizeDelta.x,
+			minSpace
+		);
 	}
 
 	/// <summary>

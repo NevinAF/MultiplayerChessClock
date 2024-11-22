@@ -133,12 +133,12 @@ public class TrackerManager : SingletonMono<TrackerManager>
 			}
 			case SyncList<TrackerActionNetworkData>.Operation.OP_REMOVEAT:
 			{
-				button.DestroyAction(index);
+				button.DestroyAction(index, data);
 				break;
 			}
 			case SyncList<TrackerActionNetworkData>.Operation.OP_SET:
 			{
-				button.DestroyAction(index);
+				button.DestroyAction(index, data);
 				goto case SyncList<TrackerActionNetworkData>.Operation.OP_ADD;
 			}
 		}

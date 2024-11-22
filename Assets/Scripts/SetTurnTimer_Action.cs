@@ -6,7 +6,7 @@ public class SetTurnTimer_Action : TrackerAction
 {
 	public SDispatcher<string> Time;
 
-	public override void ApplySolo(List<int> actionIds)
+	public override void ApplySolo(LinkedList<ReducingActionEntry> actionIds = null)
 	{
 		int seconds = TimeShort.ToSeconds(NetworkData.data);
 
@@ -17,6 +17,6 @@ public class SetTurnTimer_Action : TrackerAction
 	public override void Server_PreformActionPrefab(ref TrackerNetworkData targetNetworkData, ushort data)
 	{
 		UnityEngine.Debug.Log("Server_PreformActionPrefab: " + TimeShort.ToSeconds(data));
-		targetNetworkData.IncPhysicalTimeRemaining(TimeShort.ToSeconds(data));
+		targetNetworkData.SetTurnTimeRemaining(TimeShort.ToSeconds(data));
 	}
 }

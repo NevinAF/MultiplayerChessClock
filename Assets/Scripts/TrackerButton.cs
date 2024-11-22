@@ -1,42 +1,91 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor.Overlays;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
+public readonly struct ReducingActionEntry
+{
+	public readonly int index;
+	public readonly TrackerActionNetworkData data;
+
+	public ReducingActionEntry(int index, in TrackerActionNetworkData data)
+	{
+		this.index = index;
+		this.data = data;
+	}
+}
+
 public class TrackerButton : MonoBehaviour
 {
-	protected static readonly List<int> reducingList = new List<int>();
+	protected static readonly LinkedList<ReducingActionEntry> reducingList = new LinkedList<ReducingActionEntry>();
 
-	public readonly SortedList<int, TrackerAction> actions = new SortedList<int, TrackerAction>();
+	public readonly List<TrackerAction> actions = new List<TrackerAction>();
 
 	public Transform ActionsParent;
 	public Button Button;
 
-	public TrackerAction CreateAction(int key, TrackerActionNetworkData data)
+	public virtual TrackerAction CreateAction(int key, in TrackerActionNetworkData data)
 	{
+		int siblingIndex = LobbyNetworkManager.GetActionSiblingIndex(key, data);
+
+#if DEBUG
+		if (siblingIndex < 0 || siblingIndex > actions.Count)
+		{
+			Debug.LogError("Sibling index is out of range for the existing actions! It should be between 0 and " + actions.Count + " but was " + siblingIndex);
+			return null;
+		}
+#endif
+
 		var action = TrackerManager.CreateAction(data, ActionsParent);
-		actions.Add(key, action);
-		action.Dispatcher.Target.Valid.Attach(PreformDelayedUpdate);
-		action.Dispatcher.Disabled.Attach(PreformDelayedUpdate);
+		action.transform.SetSiblingIndex(siblingIndex + 1);
+		action.Dispatcher.Target.Valid.OnChange.AddListener(PreformDelayedUpdate);
+		action.Dispatcher.Disabled.OnChange.AddListener(PreformDelayedUpdate);
+
+		actions.Insert(siblingIndex, action);
+
+		PreformDelayedUpdate();
+
+
+		// LayoutRebuilder.ForceRebuildLayoutImmediate(ActionsParent.parent as RectTransform);
+
 		return action;
 	}
 
-	public void DestroyAction(int key)
+	public void DestroyAction(int key, in TrackerActionNetworkData data)
 	{
-		var action = actions[key];
-		action.Dispatcher.Target.Valid.Detach(PreformDelayedUpdate);
-		action.Dispatcher.Disabled.Detach(PreformDelayedUpdate);
+		int siblingIndex = LobbyNetworkManager.GetActionSiblingIndex(key, data);
+
+#if DEBUG
+		if (siblingIndex < 0 || siblingIndex >= actions.Count)
+		{
+			Debug.LogError("Sibling index did not result in an existing action!");
+			return;
+		}
+#endif
+
+		TrackerAction action = actions[siblingIndex];
+
+#if DEBUG
+		if (!data.Equals(action.NetworkData))
+			Debug.LogError("NetworkData does not match the action to be destroyed.");
+#endif
+
 		Destroy(action.gameObject);
-		actions.Remove(key);
+
+		actions.RemoveAt(siblingIndex);
+
+		PreformDelayedUpdate();
+
+		// LayoutRebuilder.ForceRebuildLayoutImmediate(ActionsParent.parent as RectTransform);
 	}
 
 	public void ClearActions()
 	{
-		foreach (var action in actions.Values)
+		for (int i = 0; i < actions.Count; i++)
 		{
-			action.Dispatcher.Target.Valid.Detach(PreformDelayedUpdate);
-			action.Dispatcher.Disabled.Detach(PreformDelayedUpdate);
+			TrackerAction action = actions[i];
 			Destroy(action.gameObject);
 		}
 		actions.Clear();
@@ -44,6 +93,7 @@ public class TrackerButton : MonoBehaviour
 
 	public void OnClick(UnityAction action)
 	{
+		Button.onClick.RemoveAllListeners();
 		Button.onClick.AddListener(action);
 	}
 
@@ -54,33 +104,38 @@ public class TrackerButton : MonoBehaviour
 		bool active = false;
 		bool interactable = true;
 
-		for (int i = 0; i < actions.Values.Count; i++)
+		for (int i = 0; i < actions.Count; i++)
 		{
-			TrackerAction action = actions.Values[i];
+			TrackerAction action = actions[i];
 			active |= !action.Dispatcher.Invalid;
 			interactable &= !action.Dispatcher.Disabled;
 		}
+
+		UnityEngine.Debug.Log("PreformDelayedUpdate: " + actions.Count + " " + active + " " + interactable);
 
 		ActionsParent.gameObject.SetActive(active);
 		if (active)
 		{
 			reducingList.Clear();
-			reducingList.AddRange(actions.Keys);
+			for (int i = 0; i < actions.Count; i++)
+				reducingList.AddLast(new ReducingActionEntry(i, actions[i].NetworkData));
 
 			for (int i = 0; i < actions.Count; i++)
 			{
-				int key = actions.Keys[i];
-				TrackerAction action = actions.Values[i];
+				TrackerAction action = actions[i];
 
-				if (reducingList.Count > 0 && key == reducingList[0])
+				if (reducingList.Count > 0 && i == reducingList.First.Value.index)
 				{
 					action.gameObject.SetActive(true);
-					reducingList.RemoveAt(0);
+					reducingList.RemoveFirst();
 					action.ApplyReduceWith(reducingList);
 				}
 				else action.gameObject.SetActive(false);
 			}
-
+#if DEBUG
+			if (reducingList.Count > 0)
+				UnityEngine.Debug.LogError("ReducingList not empty after loop.");
+#endif
 			Button.interactable = interactable;
 		}
 	}

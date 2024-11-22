@@ -16,8 +16,8 @@ public abstract class TrackerAction : MonoBehaviour
 		Dispatcher.Target.Valid.Attach(UpdateValid);
 	}
 
-	public abstract void ApplySolo(List<int> actionIds);
-	public virtual void ApplyReduceWith(List<int> actionIds) => ApplySolo(actionIds);
+	public abstract void ApplySolo(LinkedList<ReducingActionEntry> actionIds = null);
+	public virtual void ApplyReduceWith(LinkedList<ReducingActionEntry> actionIds) => ApplySolo();
 	public abstract void Server_PreformActionPrefab(ref TrackerNetworkData targetNetworkData, ushort data);
 
 	public virtual void UpdateValid()

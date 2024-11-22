@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Threading;
 using System;
+using UnityEngine.Events;
 
 public class LobbyNetworkManager : NetworkBehaviour
 {
@@ -54,6 +55,46 @@ public class LobbyNetworkManager : NetworkBehaviour
 		return Instance.actions[index];
 	}
 
+	public static int GetActionSiblingIndex(int actionIndex, in TrackerActionNetworkData data)
+	{
+		TrackerActionNetworkData other;
+
+		int index = 0;
+		int count = Mathf.Min(Instance.actions.Count, actionIndex);
+		for (int i = 0; i < count; i++)
+		{
+			other = Instance.actions[i];
+			if (other.attachedTracker == data.attachedTracker && other.buttonIndex == data.buttonIndex)
+				index++;
+		}
+
+		return index;
+	}
+
+	public static int GetActionIndex(int siblingIndex, in TrackerActionNetworkData data)
+	{
+		TrackerActionNetworkData other;
+
+		int index = 0;
+		for (int i = 0; i < Instance.actions.Count; i++)
+		{
+			other = Instance.actions[i];
+			if (other.attachedTracker == data.attachedTracker && other.buttonIndex == data.buttonIndex)
+			{
+				if (index == siblingIndex)
+				{
+#if DEBUG
+					if (!other.Equals(data))
+						Debug.LogError("NetworkData for sibling index does not match the data that was provided.");
+#endif
+					return i;
+				}
+				index++;
+			}
+		}
+		return -1;
+	}
+
 	private static readonly List<TrackerNetworkData> backing_trackers = new List<TrackerNetworkData>();
 	private static readonly List<TrackerActionNetworkData> backing_actions = new List<TrackerActionNetworkData>();
 
@@ -63,49 +104,59 @@ public class LobbyNetworkManager : NetworkBehaviour
 	public readonly SyncList<TrackerNetworkData> trackers = new SyncList<TrackerNetworkData>(backing_trackers);
 	public readonly SyncList<TrackerActionNetworkData> actions = new SyncList<TrackerActionNetworkData>(backing_actions);
 
-	private static double disconnectTime = 0;
-	public static double CTime => double.IsNaN(disconnectTime) ? NetworkTime.time : Time.timeAsDouble - disconnectTime;
+	[SyncVar] public double recoverTime = 0; // Value should be saved to files and passed on initialization. Never updated otherwise.
+
+	public static double RunTime => NetworkTime.time - Instance.recoverTime;
 
 	public static byte TrackerCount => (byte)Instance.trackers.Count;
 	public static int ActionCount => Instance.actions.Count;
 
-	public SDispatcher<string> LobbyName;
-	public SDispatcher<int> PlayerCount;
+	public UnityEvent Disconnect;
+
+	public LobbyInfoSync Info;
+
+	private void SaveCurrentToFile()
+	{
+		if (trackers.Count == 0)
+			return;
+		LobbySaves.Save();
+	}
 
 	public void Awake()
 	{
 		m_instance = this;
 
-		Player.OnPlayerAdded += _ => PlayerCount.Value = Player.Players.Count;
-		Player.OnPlayerRemoved += _ => PlayerCount.Value = Player.Players.Count;
-
 #if DEBUG
 		OnTrackersChange += (op, index, data) => Debug.Log("Tracker " + op + " " + index + ": " + data);
 		OnActionsChange += (op, index, data) => Debug.Log("Action " + op + " " + index + ": " + data);
-		PlayerCount.Attach(count => Debug.Log("Player count updated: " + count));
 #endif
 	}
 
 	// on any type of disconnect
 	public override void OnStopClient()
 	{
-		disconnectTime = Time.timeAsDouble - NetworkTime.time;
+		recoverTime = RunTime;
 		trackers.OnChange -= CallOnTrackersChange;
 		actions.OnChange -= CallOnActionsChange;
 
-		LobbyName.Value = "<Disconnected>";
+		SaveCurrentToFile();
 	}
 
 	public override void OnStartClient()
 	{
-		disconnectTime = double.NaN;
+		recoverTime = NetworkTime.time - recoverTime;
 		trackers.OnChange += CallOnTrackersChange;
 		actions.OnChange += CallOnActionsChange;
 
-		LobbyName.Value = "Lobby " + NetworkManager.singleton.networkAddress;
-		
+		Disconnect?.Invoke();
+
 		// Process initial SyncList payload
-		if (!isServer)
+		OnReinitialize();
+	}
+
+	private void OnReinitialize()
+	{
+		if (isClient)
 		{
 			ReinitializeSyncList(trackers, OnTrackersChange);
 			ReinitializeSyncList(actions, OnActionsChange);
@@ -192,6 +243,12 @@ public class LobbyNetworkManager : NetworkBehaviour
 		var data = GetTrackerData(index);
 		data.Invalidate();
 		Server_SetTracker(index, data);
+
+		for (int i = 0; i < actions.Count; i++)
+		{
+			if (actions[i].attachedTracker == index)
+				actions.RemoveAt(i--);
+		}
 	}
 	public static void Cmd_RemoveTracker(int index) => Instance.Server_RemoveTracker(index);
 
@@ -273,4 +330,26 @@ public class LobbyNetworkManager : NetworkBehaviour
 		actions[index] = data;
 	}
 	public static void Cmd_ChangeAction(int index, TrackerActionNetworkData data) => Instance.Server_ChangeAction(index, data);
+
+	[Command(requiresAuthority = false)]
+	private void Server_BroadcastReinitialize(byte[] data)
+	{
+		using (var reader = NetworkReaderPool.Get(data))
+			OnDeserialize(reader, true);
+
+		RpcReinitialize(data);
+		recoverTime = NetworkTime.time - recoverTime;
+	}
+	[ClientRpc]
+	private void RpcReinitialize(byte[] data)
+	{
+		if (!isServer) // Server (i.e. host) already deserialized the data
+		{
+			using (var reader = NetworkReaderPool.Get(data))
+				OnDeserialize(reader, true);
+		}
+
+		OnReinitialize();
+	}
+	public static void Cmd_BroadcastReinitialize(byte[] data) => Instance.Server_BroadcastReinitialize(data);
 }

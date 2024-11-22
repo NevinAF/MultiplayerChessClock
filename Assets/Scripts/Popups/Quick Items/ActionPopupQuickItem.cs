@@ -14,7 +14,7 @@ public class ActionPopupQuickItem : InputPopupQuickItem
 				Destroy(action.gameObject);
 
 			action = TrackerManager.CreateAction(target, ActionParent);
-			action.ApplySolo(ActionInputPopup.emptyList);
+			action.ApplySolo();
 		}
 	}
 }

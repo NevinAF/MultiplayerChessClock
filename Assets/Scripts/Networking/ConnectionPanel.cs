@@ -1,25 +1,25 @@
-using System.Collections;
 using System.Collections.Generic;
 using Mirror;
-using Mirror.Discovery;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
 
 public class ConnectionPanel : MonoBehaviour
 {
+	public SDispatcher<bool> HasLobbiesForRecover;
+
+	public UnityEvent OnConnecting;
+
 	public LobbyButton LobbyPrefab;
 	public Transform LobbyParent;
 	public LobbyDiscovery networkDiscovery;
 	public NetworkManager networkManager;
 
-	public UnityEvent Connected;
-
 	public double lobbyTimeoutBuffer = 3;
 
-	public SortedList<LobbyServerResponse, LobbyButton> discoveredServers = new SortedList<LobbyServerResponse, LobbyButton>();
+	public Dictionary<LobbyServerResponse, LobbyButton> discoveredServers = new Dictionary<LobbyServerResponse, LobbyButton>();
+	public Queue<LobbyServerResponse> deleteQueue = new Queue<LobbyServerResponse>();
 
-	private void OnEnable()
+	protected virtual void OnEnable()
 	{
 		while (LobbyParent.childCount > 0)
 		{
@@ -27,26 +27,25 @@ public class ConnectionPanel : MonoBehaviour
 		}
 
 		networkDiscovery.StartDiscovery();
-		networkDiscovery.OnServerFound.AddListener(DiscoveredServer);
+		networkDiscovery.OnServerFound.AddListener(InternalDiscoveredServer);
+
+		HasLobbiesForRecover.Value = LobbySaves.HasSavedLobbies();
 	}
 
 	private void Update()
 	{
-		if (NetworkServer.active || NetworkClient.active)
+		foreach (var server in discoveredServers)
 		{
-			Connected?.Invoke();
-			gameObject.SetActive(false);
-			return;
+			if (Time.timeAsDouble - server.Value.lastUpdateTime > lobbyTimeoutBuffer)
+			{
+				Destroy(server.Value.gameObject);
+				deleteQueue.Enqueue(server.Key);
+			}
 		}
 
-		for (int i = discoveredServers.Count - 1; i >= 0; i--)
+		while (deleteQueue.Count > 0)
 		{
-			var button = discoveredServers.Values[i];
-			if (Time.timeAsDouble > button.lastUpdateTime + networkDiscovery.ActiveDiscoveryInterval + lobbyTimeoutBuffer)
-			{
-				Destroy(button.gameObject);
-				discoveredServers.RemoveAt(i);
-			}
+			discoveredServers.Remove(deleteQueue.Dequeue());
 		}
 	}
 
@@ -54,19 +53,13 @@ public class ConnectionPanel : MonoBehaviour
 	{
 		DestroyAll();
 		networkDiscovery.StopDiscovery();
-
-		if (NetworkServer.active)
-		{
-			networkDiscovery.AdvertiseServer();
-		}
+		networkDiscovery.OnServerFound.RemoveListener(InternalDiscoveredServer);
 	}
 
 	private void DestroyAll()
 	{
-		for (int i = discoveredServers.Count - 1; i >= 0; i--)
-		{
-			Destroy(discoveredServers.Values[i].gameObject);
-		}
+		foreach (var server in discoveredServers)
+			Destroy(server.Value.gameObject);
 		discoveredServers.Clear();
 	}
 
@@ -76,12 +69,17 @@ public class ConnectionPanel : MonoBehaviour
 		networkDiscovery.StartDiscovery();
 	}
 
-	public void DiscoveredServer(LobbyServerResponse info)
+	protected void InternalDiscoveredServer(LobbyServerResponse info) => DiscoveredServer(info);
+
+	protected virtual LobbyButton DiscoveredServer(LobbyServerResponse info)
 	{
 		if (!discoveredServers.TryGetValue(info, out LobbyButton lobby))
 		{
 			lobby = Instantiate(LobbyPrefab, LobbyParent);
-			lobby.Button.onClick.AddListener(() => networkManager.StartClient(info.uri));
+			lobby.Button.onClick.AddListener(() => {
+				OnConnecting?.Invoke();
+				networkManager.StartClient(info.uri);
+			});
 
 			discoveredServers.Add(info, lobby);
 		}
@@ -90,11 +88,15 @@ public class ConnectionPanel : MonoBehaviour
 		lobby.Name.Value = info.name;
 		lobby.IconIndex.Value = info.iconIndex;
 		lobby.PlayerCount.Value = info.playerCount;
-		lobby.Desc.Value = info.EndPoint.Address.ToString();
+		lobby.Desc.Value = info.uri.Host + ":" + info.uri.Port;
+		return lobby;
 	}
 
 	public void HostLAN()
 	{
+		OnConnecting?.Invoke();
 		networkManager.StartHost();
 	}
+
+	public void SetHasLobbiesForRecover(bool value) => HasLobbiesForRecover.Value = value;
 }

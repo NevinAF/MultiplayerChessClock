@@ -12,7 +12,7 @@ public class OnOffTimer_Action : TrackerAction
 	public string ToggleLabel;
 	public string UseLabel;
 
-	public override void ApplySolo(List<int> actionIds)
+	public override void ApplySolo(LinkedList<ReducingActionEntry> actionIds = null)
 	{
 		short toggleTarget = (short)NetworkData.data;
 

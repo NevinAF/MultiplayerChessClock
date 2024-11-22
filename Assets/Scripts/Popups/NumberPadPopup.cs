@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -9,8 +10,6 @@ public class NumberPadPopup : InputPopup<NumberPadPopup, int, NumberPadPopup.Inp
 	{
 		Duration,
 	}
-
-	public delegate string FormatCallback(int unit, int value);
 
 	public class InputOptions : InputPopupShowOptions<int>
 	{
@@ -33,7 +32,7 @@ public class NumberPadPopup : InputPopup<NumberPadPopup, int, NumberPadPopup.Inp
 			case InputType.Duration:
 				UnitsText.Value = "s/m/h";
 				Formats = 3;
-				Formatter = (int unit, int value) => Formatting.Time(value * Mathf.Pow(60f, unit));
+				Formatter = val => Formatting.Time(val);
 				break;
 		}
 	}
@@ -48,7 +47,7 @@ public class NumberPadPopup : InputPopup<NumberPadPopup, int, NumberPadPopup.Inp
 	public InputType Type { get; private set; }
 	public int MaxValue { get; private set; }
 	public int Formats { get; private set; }
-	public FormatCallback Formatter { get; private set; }
+	public Func<int, string> Formatter { get; private set; }
 
 	protected override bool ResultValid => Result.Value != int.MaxValue;
 
@@ -119,7 +118,7 @@ public class NumberPadPopup : InputPopup<NumberPadPopup, int, NumberPadPopup.Inp
 			}
 
 			Result.Value = value;
-			FormattedPreview.Value = Formatter(UnitType, value);
+			FormattedPreview.Value = Formatter(value);
 		}
 
 		IsntEmpty.Value = RawText.Value != "—";
@@ -140,7 +139,7 @@ public class NumberPadPopup : InputPopup<NumberPadPopup, int, NumberPadPopup.Inp
 
 	protected override void SetQuickFillEntry(NumberPopupQuickItem item, int value)
 	{
-		item.Preview.text = Formatter(value, 0);
+		item.Preview.text = Formatter(value);
 		item.Value.text = value.ToString();
 	}
 

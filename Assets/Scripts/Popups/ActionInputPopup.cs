@@ -24,8 +24,6 @@ public struct SerializedActionData
 
 public class ActionInputPopup : InputPopup<ActionInputPopup, SerializedActionData, ActionInputPopup.InputOptions, ActionPopupQuickItem>
 {
-	public static readonly List<int> emptyList = new List<int>();
-
 	public class InputOptions : InputPopupShowOptions<SerializedActionData>
 	{
 		public int editTarget;
@@ -245,7 +243,7 @@ public class ActionInputPopup : InputPopup<ActionInputPopup, SerializedActionDat
 		{
 			TypeDataInput[result.type - 1].action.Dispatcher.SetNetworkData(ResultNetworkData);
 			TypeDataInput[result.type - 1].UpdatePreview();
-			TypeDataInput[result.type - 1].action.ApplySolo(emptyList);
+			TypeDataInput[result.type - 1].action.ApplySolo();
 			TypeName.Value = TypeDataInput[result.type - 1].Name;
 		}
 		else {
@@ -285,6 +283,8 @@ public class ActionInputPopup : InputPopup<ActionInputPopup, SerializedActionDat
 
 		Result.Value = value;
 		TypeValid.Value = true;
+
+		Instance.TargetTracker.PipeFrom(value.target);
 	}
 
 	protected override void SetQuickFillEntry(ActionPopupQuickItem item, SerializedActionData value)

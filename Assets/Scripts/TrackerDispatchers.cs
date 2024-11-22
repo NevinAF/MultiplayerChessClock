@@ -119,7 +119,7 @@ public class TrackerDispatchers : MonoBehaviour
 		if (!TimerActive.Value)
 			return;
 
-		float remain = (float)(m_turnTime - LobbyNetworkManager.CTime);
+		float remain = (float)(m_turnTime - LobbyNetworkManager.RunTime);
 
 		if (remain >= 0)
 		{
