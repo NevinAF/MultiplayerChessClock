@@ -13,6 +13,8 @@ public class CustomNetworkManager : NetworkManager
 
 	// private bool tryClient = true;
 
+	public LobbyNetworkManager lobbyNetworkManager;
+
 	public LobbyDiscovery networkDiscovery;
 	// public Button startHostButton;
 	// public Button startClientButton;
@@ -45,6 +47,7 @@ public class CustomNetworkManager : NetworkManager
 	{
 		returningHome = true;
 		StopAll();
+		LobbyNetworkManager.Instance.ResetNetworkData();
 		ReturnHome?.Invoke();
 	}
 

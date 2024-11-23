@@ -84,7 +84,7 @@ public class TrackerManager : SingletonMono<TrackerManager>
 		{
 			// For all trackers that exceed the count in the network, make sure they are invalidated.
 			for (int i = LobbyNetworkManager.TrackerCount; i < Instance.trackers.Count; i++)
-				Instance.trackers[index].UpdateFromNetwork();
+				Instance.trackers[i].UpdateFromNetwork();
 
 			Instance.ValidTrackerCount.Value = 0;
 			return;

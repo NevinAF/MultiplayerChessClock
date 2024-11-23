@@ -1,16 +1,12 @@
 using UnityEngine;
 
-public abstract class SingletonMono<T> : MonoBehaviour where T : SingletonMono<T>
+public abstract class SingletonMono<T> : MonoBehaviour, ISerializationCallbackReceiver where T : SingletonMono<T>
 {
 	protected static T m_instance;
 	public static T Instance
 	{
 		get
 		{
-			// UnityEngine.Debug.Log("SingletonMono<" + typeof(T).Name + ">.Instance");
-
-			if (m_instance == null)
-				m_instance = FindObjectOfType<T>(true);
 			if (m_instance == null)
 				Debug.LogError(typeof(T).Name + " not available in the current scene.");
 			return m_instance;
@@ -19,6 +15,19 @@ public abstract class SingletonMono<T> : MonoBehaviour where T : SingletonMono<T
 
 	protected virtual void Awake()
 	{
-		m_instance = (T)this;
+		if (m_instance == null)
+			m_instance = this as T;
+		else if (m_instance != this)
+		{
+			Debug.LogError("SingletonMono<" + typeof(T).Name + "> instance mismatch: " + m_instance + " != " + this);
+			Destroy(this);
+		}
+	}
+
+	public virtual void OnBeforeSerialize() { }
+	public virtual void OnAfterDeserialize()
+	{
+		if (m_instance == null)
+			m_instance = this as T;
 	}
 }

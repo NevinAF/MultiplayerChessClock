@@ -14,13 +14,13 @@ public class TrackerButtonPreview : TrackerButton
 
 	protected override void PreformDelayedUpdate()
 	{
-		bool active = false;
+		bool active = actions.Count > 0;
 		bool interactable = true;
 
 		for (int i = 0; i < actions.Count; i++)
 		{
 			TrackerAction action = actions[i];
-			active |= !action.Dispatcher.Invalid;
+			active &= !action.Dispatcher.Invalid;
 			interactable &= !action.Dispatcher.Disabled;
 		}
 

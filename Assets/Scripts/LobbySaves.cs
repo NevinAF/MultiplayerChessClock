@@ -48,7 +48,7 @@ public static class LobbySaves
 				? date
 				: default;
 
-			Version = parts.Length > 8 && int.TryParse(parts[8], out tryvalue)
+			Version = parts.Length > 8 && int.TryParse(parts[8][..^6], out tryvalue)
 				? tryvalue
 				: -1;
 		}
@@ -66,22 +66,29 @@ public static class LobbySaves
 
 	private static string SanitizeHostForFileName(string host)
 	{
-		return Regex.Replace(host, @"[^a-zA-Z0-9\-\.]", "-");
+		return Regex.Replace(host, @"[^a-zA-Z0-9\-\.]", ".");
 	}
 
 	public static void Save()
 	{
 		Entry entry = new Entry
 		{
-			LobbyName = LobbyNetworkManager.Instance.Info.Name,
-			LobbyIcon = LobbyNetworkManager.Instance.Info.Icon,
-			Address = SanitizeHostForFileName(LobbyNetworkManager.Instance.Info.Address),
+			LobbyName = LobbyInfoDispatcher.Instance.Name,
+			LobbyIcon = LobbyInfoDispatcher.Instance.IconIndex,
+			Address = SanitizeHostForFileName(LobbyInfoDispatcher.Instance.Address),
 			Date = DateTime.Now,
-			TrackerCount = LobbyNetworkManager.TrackerCount,
+			TrackerCount = TrackerManager.Instance.ValidTrackerCount,
 			ActionCount = LobbyNetworkManager.ActionCount,
 			Runtime = TimeSpan.FromSeconds(LobbyNetworkManager.Instance.recoverTime),
 			Version = Entry.CurrentVersion
 		};
+
+		if (entry.Runtime.TotalSeconds < 0)
+		{
+			UnityEngine.Debug.LogWarning("Saving lobby with negative runtime: " + entry);
+		}
+
+		var otherSaves = GetSavedEntries();
 
 		// Save the file
 		string path = Application.persistentDataPath + "/" + entry.FileName();
@@ -94,6 +101,19 @@ public static class LobbySaves
 			using (var file = new System.IO.FileStream(path, System.IO.FileMode.Create))
 				file.Write(segment.Array, segment.Offset, segment.Count);
 		}
+
+		// If a different save with the same lobby, icon, tracker count, and action count, and Address exists, delete it
+		for (int i = 0; i < otherSaves.Length; i++)
+		{
+			var other = otherSaves[i].Item2;
+			if (entry.LobbyName == other.LobbyName &&
+				entry.LobbyIcon == other.LobbyIcon &&
+				entry.TrackerCount == other.TrackerCount &&
+				entry.ActionCount == other.ActionCount &&
+				entry.Address == other.Address &&
+				(entry.Runtime - other.Runtime).TotalSeconds < 600)
+				DeleteFile(otherSaves[i].Item1);
+		}
 	}
 
 	public static void LoadFromFile(string path)
@@ -103,10 +123,18 @@ public static class LobbySaves
 
 		if (NetworkServer.active || NetworkClient.active)
 			LobbyNetworkManager.Cmd_BroadcastReinitialize(data);
-		else
-			// Deserialize the data
-			using (var reader = NetworkReaderPool.Get(data))
-				LobbyNetworkManager.Instance.OnDeserialize(reader, true);
+		else {
+			try {
+				// Deserialize the data
+				using (var reader = NetworkReaderPool.Get(data))
+					LobbyNetworkManager.Instance.OnDeserialize(reader, true);
+			}
+			catch (Exception e)
+			{
+				Debug.LogError($"Failed to load lobby from file {path}: {e}");
+				Debug.LogException(e);
+			}
+		}
 	}
 
 	public static (string, Entry)[] GetSavedEntries()

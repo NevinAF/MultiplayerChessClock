@@ -129,6 +129,12 @@ public class ModifyTrackerMenu : SingletonMono<ModifyTrackerMenu>
 			spawn.Name.Value = thisIndex == 0 ? "Primary" : "Button #" + thisIndex;
 		}
 
+		if (op == SyncList<TrackerActionNetworkData>.Operation.OP_SET || op == SyncList<TrackerActionNetworkData>.Operation.OP_REMOVEAT)
+		{
+			LobbyNetworkManager.ReinitializeActionCallback(OnNetworkActionChange);
+			return;
+		}
+
 		if (op == SyncList<TrackerActionNetworkData>.Operation.OP_CLEAR)
 		{
 			if (Buttons.Count == 0)
@@ -156,28 +162,10 @@ public class ModifyTrackerMenu : SingletonMono<ModifyTrackerMenu>
 
 		TrackerButtonPreview button = Buttons[buttonIndex];
 
-		switch (op)
-		{
-			case SyncList<TrackerActionNetworkData>.Operation.OP_ADD:
-			case SyncList<TrackerActionNetworkData>.Operation.OP_INSERT:
-			{
-				var action = button.CreateAction(index, data);
-				action.Dispatcher.AddOnEditAction(() => {
-					OnEditAction(LobbyNetworkManager.GetActionIndex(action.transform.GetSiblingIndex() - 1, action.NetworkData));
-				});
-				break;
-			}
-			case SyncList<TrackerActionNetworkData>.Operation.OP_REMOVEAT:
-			{
-				button.DestroyAction(index, data);
-				break;
-			}
-			case SyncList<TrackerActionNetworkData>.Operation.OP_SET:
-			{
-				button.DestroyAction(index, data);
-				goto case SyncList<TrackerActionNetworkData>.Operation.OP_ADD;
-			}
-		}
+		var action = button.CreateAction(index, data);
+		action.Dispatcher.AddOnEditAction(() => {
+			OnEditAction(LobbyNetworkManager.GetActionIndex(action.transform.GetSiblingIndex() - 1, action.NetworkData));
+		});
 	}
 
 	public void OnCreateNew()

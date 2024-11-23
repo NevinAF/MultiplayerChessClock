@@ -23,7 +23,7 @@ public class LobbyRecoverEntry : MonoBehaviour
 
 	public void SetData(LobbySaves.Entry data)
 	{
-		Invalid.Value = data.Address == "Unknown" || data.Date == default || data.TrackerCount == -1 || data.ActionCount == -1 || data.LobbyIcon == -1 || data.Runtime == default || data.Version != LobbySaves.Entry.CurrentVersion;
+		Invalid.Value = data.Address == "Unknown" || data.Date == default || data.TrackerCount == -1 || data.ActionCount == -1 || data.LobbyIcon == -1 || data.Runtime == default || data.Runtime.TotalSeconds < 0 || data.Version != LobbySaves.Entry.CurrentVersion;
 
 		Name.Value = data.LobbyName;
 		Address.Value = data.Address;
@@ -36,7 +36,7 @@ public class LobbyRecoverEntry : MonoBehaviour
 		Icon.Value = data.LobbyIcon == -1 ? InvalidIcon : GlobalSpriteList.GetSprite(data.LobbyIcon);
 		TrackerCount.Value = data.TrackerCount == -1 ? "???" : data.TrackerCount.ToString();
 		ActionCount.Value = data.ActionCount == -1 ? "???" : data.ActionCount.ToString();
-		Runtime.Value = "Runtime: "+ (data.Runtime == default ? "???" : Formatting.Time(data.Runtime.TotalSeconds));
+		Runtime.Value = "Runtime: "+ ((data.Runtime == default || data.Runtime.TotalSeconds < 0) ? "???" : Formatting.Time(data.Runtime.TotalSeconds));
 	}
 
 	public void Update()

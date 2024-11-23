@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using UnityEditor.Overlays;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -40,7 +38,7 @@ public class TrackerButton : MonoBehaviour
 
 		var action = TrackerManager.CreateAction(data, ActionsParent);
 		action.transform.SetSiblingIndex(siblingIndex + 1);
-		action.Dispatcher.Target.Valid.OnChange.AddListener(PreformDelayedUpdate);
+		action.Dispatcher.Invalid.OnChange.AddListener(PreformDelayedUpdate);
 		action.Dispatcher.Disabled.OnChange.AddListener(PreformDelayedUpdate);
 
 		actions.Insert(siblingIndex, action);
@@ -101,17 +99,15 @@ public class TrackerButton : MonoBehaviour
 
 	protected virtual void PreformDelayedUpdate()
 	{
-		bool active = false;
+		bool active = actions.Count > 0;
 		bool interactable = true;
 
 		for (int i = 0; i < actions.Count; i++)
 		{
 			TrackerAction action = actions[i];
-			active |= !action.Dispatcher.Invalid;
+			active &= !action.Dispatcher.Invalid;
 			interactable &= !action.Dispatcher.Disabled;
 		}
-
-		UnityEngine.Debug.Log("PreformDelayedUpdate: " + actions.Count + " " + active + " " + interactable);
 
 		ActionsParent.gameObject.SetActive(active);
 		if (active)

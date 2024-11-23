@@ -40,8 +40,8 @@ public class LobbyDiscovery : NetworkDiscoveryBase<ServerRequest, LobbyServerRes
 			{
 				serverId = ServerId,
 				uri = transport.ServerUri(),
-				name = LocalSettings.Instance.Name,
-				iconIndex = LocalSettings.Instance.IconIndex,
+				name = LobbyInfoDispatcher.Instance.Name,
+				iconIndex = LobbyInfoDispatcher.Instance.IconIndex,
 				playerCount = (byte)NetworkServer.connections.Count(kv => kv.Value.identity != null)
 			};
 		}

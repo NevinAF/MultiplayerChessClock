@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
@@ -32,7 +33,7 @@ public class ConnectionPanel : MonoBehaviour
 		HasLobbiesForRecover.Value = LobbySaves.HasSavedLobbies();
 	}
 
-	private void Update()
+	protected virtual void Update()
 	{
 		foreach (var server in discoveredServers)
 		{
@@ -76,10 +77,7 @@ public class ConnectionPanel : MonoBehaviour
 		if (!discoveredServers.TryGetValue(info, out LobbyButton lobby))
 		{
 			lobby = Instantiate(LobbyPrefab, LobbyParent);
-			lobby.Button.onClick.AddListener(() => {
-				OnConnecting?.Invoke();
-				networkManager.StartClient(info.uri);
-			});
+			lobby.Button.onClick.AddListener(() => ConnectUri(info.uri));
 
 			discoveredServers.Add(info, lobby);
 		}
@@ -96,6 +94,16 @@ public class ConnectionPanel : MonoBehaviour
 	{
 		OnConnecting?.Invoke();
 		networkManager.StartHost();
+
+		var uri = NetworkManager.singleton.transport.ServerUri();
+		LobbyInfoDispatcher.Instance.Address.Value = uri.Host + ":" + uri.Port;
+	}
+
+	public void ConnectUri(Uri uri)
+	{
+		OnConnecting?.Invoke();
+		networkManager.StartClient(uri);
+		LobbyInfoDispatcher.Instance.Address.Value = uri.Host + ":" + uri.Port;
 	}
 
 	public void SetHasLobbiesForRecover(bool value) => HasLobbiesForRecover.Value = value;

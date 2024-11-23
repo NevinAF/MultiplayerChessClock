@@ -28,7 +28,7 @@ public class TrackerInputPopup : InputPopup<TrackerInputPopup, byte, TrackerInpu
 		valid = false;
 		currentValue = options.currentValue;
 
-		for (int i = 0; i < TrackerManager.Instance.ValidTrackerCount; i++)
+		for (int i = 0; i < LobbyNetworkManager.TrackerCount; i++)
 			AddQuickFillEntry((byte)i, InputQuickFillIconType.Other);
 
 		LobbyNetworkManager.OnTrackersChange += OnTrackersChanged;

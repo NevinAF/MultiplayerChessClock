@@ -10,20 +10,19 @@ using UnityEngine.Events;
 
 public class LobbyNetworkManager : NetworkBehaviour
 {
-	public static LobbyNetworkManager m_instance;
+#region Singleton Template
+
+	protected static LobbyNetworkManager m_instance;
 	public static LobbyNetworkManager Instance
 	{
 		get
 		{
-#if UNITY_EDITOR
-			if (!Application.isPlaying && m_instance == null)
-				m_instance = FindObjectOfType<LobbyNetworkManager>();
-#endif
 			if (m_instance == null)
-				Debug.LogError("LobbyNetworkManager not available in the current scene.");
+				m_instance = (NetworkManager.singleton as CustomNetworkManager).lobbyNetworkManager;
 			return m_instance;
 		}
 	}
+#endregion
 
 
 	public static TrackerNetworkData GetTrackerData(int index)
@@ -95,36 +94,33 @@ public class LobbyNetworkManager : NetworkBehaviour
 		return -1;
 	}
 
+	public static Action<SyncList<TrackerNetworkData>.Operation, int, TrackerNetworkData> OnTrackersChange;
+	public static Action<SyncList<TrackerActionNetworkData>.Operation, int, TrackerActionNetworkData> OnActionsChange;
+	public static Action<string> OnNameChanged;
+	public static Action<int> OnIconChanged;
+
 	private static readonly List<TrackerNetworkData> backing_trackers = new List<TrackerNetworkData>();
 	private static readonly List<TrackerActionNetworkData> backing_actions = new List<TrackerActionNetworkData>();
 
-	public static Action<SyncList<TrackerNetworkData>.Operation, int, TrackerNetworkData> OnTrackersChange;
-	public static Action<SyncList<TrackerActionNetworkData>.Operation, int, TrackerActionNetworkData> OnActionsChange;
 
 	public readonly SyncList<TrackerNetworkData> trackers = new SyncList<TrackerNetworkData>(backing_trackers);
 	public readonly SyncList<TrackerActionNetworkData> actions = new SyncList<TrackerActionNetworkData>(backing_actions);
 
 	[SyncVar] public double recoverTime = 0; // Value should be saved to files and passed on initialization. Never updated otherwise.
+	[SyncVar(hook = nameof(CallOnNameChanged))] public string Name;
+	[SyncVar(hook = nameof(CallOnIconChanged))] public int Icon;
 
-	public static double RunTime => NetworkTime.time - Instance.recoverTime;
+	public static double RunTime => NetworkClient.active ? NetworkTime.time - Instance.recoverTime : Instance.recoverTime;
 
 	public static byte TrackerCount => (byte)Instance.trackers.Count;
 	public static int ActionCount => Instance.actions.Count;
-
-	public UnityEvent Disconnect;
-
-	public LobbyInfoSync Info;
-
-	private void SaveCurrentToFile()
+	
+	protected virtual void Awake()
 	{
-		if (trackers.Count == 0)
-			return;
-		LobbySaves.Save();
-	}
-
-	public void Awake()
-	{
-		m_instance = this;
+		if (Instance != this)
+		{
+			Debug.LogError("SingletonMono<" + typeof(LobbyNetworkManager).Name + "> instance mismatch: " + m_instance + " != " + this);
+		}
 
 #if DEBUG
 		OnTrackersChange += (op, index, data) => Debug.Log("Tracker " + op + " " + index + ": " + data);
@@ -132,23 +128,42 @@ public class LobbyNetworkManager : NetworkBehaviour
 #endif
 	}
 
+	public override void OnStartServer()
+	{
+		base.OnStartServer();
+
+		recoverTime = NetworkTime.time - recoverTime;
+		if (string.IsNullOrWhiteSpace(Name))
+			Name = LocalSettings.Instance.DefaultLobbyName;
+		if (Icon < 0)
+			Icon = LocalSettings.Instance.DefaultLobbyIconIndex;
+	}
+
 	// on any type of disconnect
 	public override void OnStopClient()
 	{
-		recoverTime = RunTime;
 		trackers.OnChange -= CallOnTrackersChange;
 		actions.OnChange -= CallOnActionsChange;
 
-		SaveCurrentToFile();
+		recoverTime = NetworkTime.time - recoverTime;
+		if (trackers.Count != 0)
+		{
+			LobbySaves.Save();
+		}
+	}
+
+	public void ResetNetworkData()
+	{
+		Name = null;
+		Icon = -1;
+		trackers.Reset();
+		actions.Reset();
 	}
 
 	public override void OnStartClient()
 	{
-		recoverTime = NetworkTime.time - recoverTime;
 		trackers.OnChange += CallOnTrackersChange;
 		actions.OnChange += CallOnActionsChange;
-
-		Disconnect?.Invoke();
 
 		// Process initial SyncList payload
 		OnReinitialize();
@@ -160,6 +175,8 @@ public class LobbyNetworkManager : NetworkBehaviour
 		{
 			ReinitializeSyncList(trackers, OnTrackersChange);
 			ReinitializeSyncList(actions, OnActionsChange);
+			CallOnNameChanged(null, Name);
+			CallOnIconChanged(-1, Icon);
 		}
 	}
 
@@ -178,6 +195,12 @@ public class LobbyNetworkManager : NetworkBehaviour
 
 	private void CallOnActionsChange(SyncList<TrackerActionNetworkData>.Operation op, int index, TrackerActionNetworkData data) =>
 		OnActionsChange?.Invoke(op, index, data);
+
+	private void CallOnNameChanged(string oldName, string newName) =>
+		OnNameChanged?.Invoke(newName);
+
+	private void CallOnIconChanged(int oldIcon, int newIcon) =>
+		OnIconChanged?.Invoke(newIcon);
 
 
 	public static void Cmd_ButtonPressed(byte tracker, byte buttonIndex) =>
@@ -332,10 +355,25 @@ public class LobbyNetworkManager : NetworkBehaviour
 	public static void Cmd_ChangeAction(int index, TrackerActionNetworkData data) => Instance.Server_ChangeAction(index, data);
 
 	[Command(requiresAuthority = false)]
+	private void Server_ChangeLobbyName(string name) => Name = name;
+	public static void Cmd_ChangeLobbyName(string name) => Instance.Server_ChangeLobbyName(name);
+
+	[Command(requiresAuthority = false)]
+	private void Server_ChangeLobbyIcon(int icon) => Icon = icon;
+	public static void Cmd_ChangeLobbyIcon(int icon) => Instance.Server_ChangeLobbyIcon(icon);
+
+	[Command(requiresAuthority = false)]
 	private void Server_BroadcastReinitialize(byte[] data)
 	{
-		using (var reader = NetworkReaderPool.Get(data))
-			OnDeserialize(reader, true);
+		try {
+			// Deserialize the data
+			using (var reader = NetworkReaderPool.Get(data))
+				OnDeserialize(reader, true);
+		}
+		catch (Exception e)
+		{
+			Debug.LogException(e);
+		}
 
 		RpcReinitialize(data);
 		recoverTime = NetworkTime.time - recoverTime;
@@ -345,8 +383,15 @@ public class LobbyNetworkManager : NetworkBehaviour
 	{
 		if (!isServer) // Server (i.e. host) already deserialized the data
 		{
-			using (var reader = NetworkReaderPool.Get(data))
-				OnDeserialize(reader, true);
+			try {
+				// Deserialize the data
+				using (var reader = NetworkReaderPool.Get(data))
+					OnDeserialize(reader, true);
+			}
+			catch (Exception e)
+			{
+				Debug.LogException(e);
+			}
 		}
 
 		OnReinitialize();

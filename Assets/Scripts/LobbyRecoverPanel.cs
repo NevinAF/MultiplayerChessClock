@@ -23,14 +23,12 @@ public class LobbyRecoverPanel : MonoBehaviour
 			var entry = Entries.Initialize();
 			entry.Recover.onClick.AddListener(() =>
 			{
-				OnFileSelected.Invoke();
+				OnFileSelected?.Invoke();
 				LobbySaves.LoadFromFile(m_entries[index].Item1);
 
 				if (NetworkServer.active || NetworkClient.active)
 					return;
 
-				LobbyNetworkManager.Instance.Info.SetLobbyName(m_entries[index].Item2.LobbyName);
-				LobbyNetworkManager.Instance.Info.SetLobbyIcon(m_entries[index].Item2.LobbyIcon);
 				NetworkManager.singleton.StartHost();
 			});
 			entry.Delete.onClick.AddListener(() =>

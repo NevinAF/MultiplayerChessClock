@@ -906,7 +906,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 304, y: -64.39995}
-  m_SizeDelta: {x: 373.29, y: 111}
+  m_SizeDelta: {x: 347.7, y: 111}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &35742584
 MonoBehaviour:
@@ -928,7 +928,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: <LOBBY NAME>
+  m_text: <Lobby Name>
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d9b454495b7d24a7a933eb61bdfa0607, type: 2}
   m_sharedMaterial: {fileID: 7409485994217783921, guid: d9b454495b7d24a7a933eb61bdfa0607, type: 2}
@@ -1049,8 +1049,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 929313092}
-        m_TargetAssemblyTypeName: LobbyInfoSync, Assembly-CSharp
+      - m_Target: {fileID: 1161401381}
+        m_TargetAssemblyTypeName: LobbyInfoDispatcher, Assembly-CSharp
         m_MethodName: OnEditLobbyName
         m_Mode: 1
         m_Arguments:
@@ -5143,8 +5143,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 929313092}
-        m_TargetAssemblyTypeName: LobbyInfoSync, Assembly-CSharp
+      - m_Target: {fileID: 1161401381}
+        m_TargetAssemblyTypeName: LobbyInfoDispatcher, Assembly-CSharp
         m_MethodName: OnEditLobbyIcon
         m_Mode: 1
         m_Arguments:
@@ -5175,7 +5175,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 69b9427f7a1ab4f10a41c53ebc53efc8, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -12740,7 +12740,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &395415901
 RectTransform:
   m_ObjectHideFlags: 0
@@ -15241,6 +15241,7 @@ MonoBehaviour:
   evaluationMethod: 0
   evaluationInterval: 3
   timeInterpolationGui: 0
+  lobbyNetworkManager: {fileID: 929313093}
   networkDiscovery: {fileID: 485163342}
   Disconnected:
     m_PersistentCalls:
@@ -15525,19 +15526,7 @@ MonoBehaviour:
   transport: {fileID: 485163339}
   OnServerFound:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 281740341}
-        m_TargetAssemblyTypeName: ConnectionPanel, Assembly-CSharp
-        m_MethodName: DiscoveredServer
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   secretHandshake: -88428438483815130
 --- !u!1 &492676100
 GameObject:
@@ -20421,7 +20410,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 929313091}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: LocalSettings, Assembly-CSharp
         m_MethodName: OnEditDefaultLobbyName
         m_Mode: 1
@@ -29959,42 +29948,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 9196596990978067152, guid: dd4e961c3ade77847b64f8190e46082a, type: 3}
-      propertyPath: Info
-      value: 
-      objectReference: {fileID: 929313092}
-    - target: {fileID: 9196596990978067152, guid: dd4e961c3ade77847b64f8190e46082a, type: 3}
-      propertyPath: PlayerCount.OnChange.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9196596990978067152, guid: dd4e961c3ade77847b64f8190e46082a, type: 3}
-      propertyPath: LobbyName.OnChange.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 35742584}
-    - target: {fileID: 9196596990978067152, guid: dd4e961c3ade77847b64f8190e46082a, type: 3}
-      propertyPath: PlayerCount.OnChange.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9196596990978067152, guid: dd4e961c3ade77847b64f8190e46082a, type: 3}
-      propertyPath: PlayerCount.OnChange.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 815537284}
-    - target: {fileID: 9196596990978067152, guid: dd4e961c3ade77847b64f8190e46082a, type: 3}
-      propertyPath: PlayerCount.OnChange.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 9196596990978067152, guid: dd4e961c3ade77847b64f8190e46082a, type: 3}
-      propertyPath: PlayerCount.OnChange.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: SendEvent
-      objectReference: {fileID: 0}
-    - target: {fileID: 9196596990978067152, guid: dd4e961c3ade77847b64f8190e46082a, type: 3}
-      propertyPath: PlayerCount.OnChange.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: IntToStringEvent, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 9196596990978067152, guid: dd4e961c3ade77847b64f8190e46082a, type: 3}
-      propertyPath: PlayerCount.OnChange.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
     - target: {fileID: 9196596990978067153, guid: dd4e961c3ade77847b64f8190e46082a, type: 3}
       propertyPath: sceneId
       value: 819696095
@@ -30005,7 +29958,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9196596990978067158, guid: dd4e961c3ade77847b64f8190e46082a, type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 9196596990978067158, guid: dd4e961c3ade77847b64f8190e46082a, type: 3}
       propertyPath: m_LocalPosition.x
@@ -30049,211 +30002,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dd4e961c3ade77847b64f8190e46082a, type: 3}
---- !u!1 &929313090 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 9196596990978067155, guid: dd4e961c3ade77847b64f8190e46082a, type: 3}
+--- !u!114 &929313093 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9196596990978067152, guid: dd4e961c3ade77847b64f8190e46082a, type: 3}
   m_PrefabInstance: {fileID: 929313089}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &929313091
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 929313090}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 02e6d106cb9d65c49b821ba52b6c8ec1, type: 3}
+  m_Script: {fileID: 11500000, guid: 0c557e9f3b58e5744950320a281fd9a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Name:
-    m_value: <Name>
-    OnChange:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 2008451346}
-          m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
-          m_MethodName: set_text
-          m_Mode: 0
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 1
-  IconIndex:
-    m_value: 0
-    OnChange:
-      m_PersistentCalls:
-        m_Calls: []
-  DefaultLobbyName:
-    m_value: <Name>'s Lobby
-    OnChange:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 1309669522}
-          m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
-          m_MethodName: set_text
-          m_Mode: 0
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 1
-  DefaultLobbyIconIndex:
-    m_value: 0
-    OnChange:
-      m_PersistentCalls:
-        m_Calls: []
-  Icon:
-    m_value: {fileID: 0}
-    OnChange:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 1443848443}
-          m_TargetAssemblyTypeName: UnityEngine.UI.Image, UnityEngine.UI
-          m_MethodName: set_sprite
-          m_Mode: 0
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 1
-  DefaultLobbyIcon:
-    m_value: {fileID: 0}
-    OnChange:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 2133395704}
-          m_TargetAssemblyTypeName: UnityEngine.UI.Image, UnityEngine.UI
-          m_MethodName: set_sprite
-          m_Mode: 0
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 1
---- !u!114 &929313092
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 929313090}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6eabb3f9b8bb904b810dcd4ecdeb664, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  Name: 
-  Icon: 0
-  OnNameChanged:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 35742584}
-        m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
-        m_MethodName: set_text
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1466956838}
-        m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
-        m_MethodName: set_text
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  OnIconChanged:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 145030402}
-        m_TargetAssemblyTypeName: UnityEngine.UI.Image, UnityEngine.UI
-        m_MethodName: set_sprite
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  Address:
-    m_value: 
-    OnChange:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 1047057262}
-          m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
-          m_MethodName: set_text
-          m_Mode: 0
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-  PlayerCount:
-    m_value: 0
-    OnChange:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 815537284}
-          m_TargetAssemblyTypeName: IntToStringEvent, Assembly-CSharp
-          m_MethodName: SendEvent
-          m_Mode: 0
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 1
-  LobbyRuntime:
-    m_value: 'Runtime: 26.0s'
-    OnChange:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 261250156}
-          m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
-          m_MethodName: set_text
-          m_Mode: 0
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 1
 --- !u!1 &930366801
 GameObject:
   m_ObjectHideFlags: 0
@@ -37514,7 +37273,7 @@ RectTransform:
   - {fileID: 377272723}
   - {fileID: 1324937821}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -38888,6 +38647,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1161401380}
+  - component: {fileID: 1161401381}
   m_Layer: 5
   m_Name: Layout
   m_TagString: Untagged
@@ -38919,6 +38679,120 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1161401381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1161401379}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52e01fd7f3516824ca0058681f7ca2b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name:
+    m_value: <Lobby Name>
+    OnChange:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 35742584}
+          m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
+          m_MethodName: set_text
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 1
+        - m_Target: {fileID: 1466956838}
+          m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
+          m_MethodName: set_text
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 1
+  IconIndex:
+    m_value: 0
+    OnChange:
+      m_PersistentCalls:
+        m_Calls: []
+  Address:
+    m_value: <Lobby Address>
+    OnChange:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1047057262}
+          m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
+          m_MethodName: set_text
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 1
+  PlayerCount:
+    m_value: 0
+    OnChange:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 815537284}
+          m_TargetAssemblyTypeName: IntToStringEvent, Assembly-CSharp
+          m_MethodName: SendEvent
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 1
+  LobbyRuntime:
+    m_value: 'Runtime: 26.0s'
+    OnChange:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 261250156}
+          m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
+          m_MethodName: set_text
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 1
+  Icon:
+    m_value: {fileID: 0}
+    OnChange:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 145030402}
+          m_TargetAssemblyTypeName: UnityEngine.UI.Image, UnityEngine.UI
+          m_MethodName: set_sprite
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 1
 --- !u!1 &1174367918
 GameObject:
   m_ObjectHideFlags: 0
@@ -46465,7 +46339,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 929313091}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: LocalSettings, Assembly-CSharp
         m_MethodName: OnEditIcon
         m_Mode: 1
@@ -47020,7 +46894,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: <LOBBY NAME>
+  m_text: <Lobby Name>
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 38aecd77a18d544bfb836befe83883b7, type: 2}
   m_sharedMaterial: {fileID: 6434564289584660316, guid: 38aecd77a18d544bfb836befe83883b7, type: 2}
@@ -51359,6 +51233,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1596967487}
   - component: {fileID: 1596967486}
+  - component: {fileID: 1596967488}
   m_Layer: 0
   m_Name: Global Sprite List
   m_TagString: Untagged
@@ -51551,8 +51426,98 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1596967488
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1596967485}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02e6d106cb9d65c49b821ba52b6c8ec1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name:
+    m_value: <Name>
+    OnChange:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 2008451346}
+          m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
+          m_MethodName: set_text
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 1
+  IconIndex:
+    m_value: 0
+    OnChange:
+      m_PersistentCalls:
+        m_Calls: []
+  DefaultLobbyName:
+    m_value: <Name>'s Lobby
+    OnChange:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1309669522}
+          m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
+          m_MethodName: set_text
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 1
+  DefaultLobbyIconIndex:
+    m_value: 0
+    OnChange:
+      m_PersistentCalls:
+        m_Calls: []
+  Icon:
+    m_value: {fileID: 0}
+    OnChange:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1443848443}
+          m_TargetAssemblyTypeName: UnityEngine.UI.Image, UnityEngine.UI
+          m_MethodName: set_sprite
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 1
+  DefaultLobbyIcon:
+    m_value: {fileID: 0}
+    OnChange:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 2133395704}
+          m_TargetAssemblyTypeName: UnityEngine.UI.Image, UnityEngine.UI
+          m_MethodName: set_sprite
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 1
 --- !u!1 &1597015328
 GameObject:
   m_ObjectHideFlags: 0
@@ -61394,7 +61359,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 929313091}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: LocalSettings, Assembly-CSharp
         m_MethodName: OnEditName
         m_Mode: 1
@@ -64755,7 +64720,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2108515246
 RectTransform:
   m_ObjectHideFlags: 0
@@ -65548,7 +65513,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 929313091}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: LocalSettings, Assembly-CSharp
         m_MethodName: OnEditDefaultLobbyIcon
         m_Mode: 1

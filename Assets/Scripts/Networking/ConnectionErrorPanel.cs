@@ -7,13 +7,14 @@ public class ConnectionErrorPanel : ConnectionPanel
 {
 	protected override LobbyButton DiscoveredServer(LobbyServerResponse info)
 	{
-		var disconnectInfo = LobbyNetworkManager.Instance.Info;
-		bool nameMatch = info.name == disconnectInfo.name;
-		bool addressMatch = disconnectInfo.Address == info.uri.Host + ":" + info.uri.Port;
+		bool nameMatch = info.name == LobbyInfoDispatcher.Instance.Name;
+		bool addressMatch = LobbyInfoDispatcher.Instance.Address == info.uri.Host + ":" + info.uri.Port;
+
+		UnityEngine.Debug.Log("DiscoveredServer: " + info.name + " " + info.uri.Host + ":" + info.uri.Port + " " + nameMatch + " " + addressMatch);
 
 		if (nameMatch && addressMatch)
 		{
-			networkManager.StartClient(info.uri);
+			ConnectUri(info.uri);
 		}
 		else if (nameMatch || addressMatch) {
 			
@@ -24,5 +25,13 @@ public class ConnectionErrorPanel : ConnectionPanel
 
 		return null;
 	}
+
+	protected override void Update()
+	{
+		base.Update();
+
+		HasLobbiesForRecover.Value = discoveredServers.Count > 0;
+	}
+
 
 }

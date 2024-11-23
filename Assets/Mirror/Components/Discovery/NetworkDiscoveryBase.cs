@@ -152,7 +152,9 @@ namespace Mirror.Discovery
                 clientUdpClient = null;
             }
 
-            CancelInvoke();
+			try { CancelInvoke(); }
+			catch (Exception) { }
+
 			advertiseTask = null;
         }
 
